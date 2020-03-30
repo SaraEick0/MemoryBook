@@ -6,7 +6,6 @@
     using Common.Extensions;
     using Configuration;
     using DataAccess;
-    using MemoryBook.Common;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;

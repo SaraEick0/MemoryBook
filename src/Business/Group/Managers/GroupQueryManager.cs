@@ -6,7 +6,6 @@
     using System.Threading.Tasks;
     using DataAccess.Entities;
     using Extensions;
-    using MemoryBook.Common;
     using MemoryBook.Common.Extensions;
     using MemoryBook.DataAccess;
     using Microsoft.EntityFrameworkCore;

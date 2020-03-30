@@ -7,7 +7,6 @@
     using DataAccess.Entities;
     using Extensions;
     using MemoryBook.Business.Detail.Models;
-    using MemoryBook.Common;
     using MemoryBook.Common.Extensions;
     using MemoryBook.DataAccess;
     using Microsoft.EntityFrameworkCore;

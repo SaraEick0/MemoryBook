@@ -1,6 +1,5 @@
 ﻿namespace MemoryBook.DataAccess.Entities.EntityBuilders
 {
-    using System.Security.Cryptography.X509Certificates;
     using Extensions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -14,7 +14,6 @@
     using Common.Extensions;
     using DataAccess.Interfaces;
     using MemoryBook.Business.Group.Models;
-    using MemoryBook.Common;
     using Microsoft.Extensions.Caching.Memory;
 
     public class DetailAssociationProvider : IDetailAssociationProvider

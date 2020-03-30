@@ -9,7 +9,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using MemoryBook.Common;
     using MemoryBook.Common.Extensions;
 
     public class DetailTypeQueryManager : IDetailTypeQueryManager

@@ -9,7 +9,6 @@
     using Business.GroupMembership.Managers;
     using Business.GroupMembership.Models;
     using Business.Member.Models;
-    using Common;
     using Common.Extensions;
     using Extensions;
 

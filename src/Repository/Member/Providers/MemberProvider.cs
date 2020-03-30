@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using Business.Member.Managers;
     using Business.Member.Models;
-    using Common;
     using Common.Extensions;
 
     public class MemberProvider : IMemberProvider

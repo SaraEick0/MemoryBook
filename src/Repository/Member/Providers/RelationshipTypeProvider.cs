@@ -1,13 +1,11 @@
 ﻿namespace MemoryBook.Repository.Member.Providers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Business.RelationshipType;
     using Business.RelationshipType.Managers;
     using Business.RelationshipType.Models;
-    using Common;
     using Common.Extensions;
     using Microsoft.Extensions.Caching.Memory;
 

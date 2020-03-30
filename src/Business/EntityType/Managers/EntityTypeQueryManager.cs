@@ -9,7 +9,6 @@
     using Microsoft.EntityFrameworkCore;
     using EntityType;
     using Extensions;
-    using MemoryBook.Common;
     using MemoryBook.Common.Extensions;
     using Models;
 

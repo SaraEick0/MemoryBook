@@ -7,7 +7,6 @@
     using Business.EntityType.Managers;
     using Business.RelationshipType.Managers;
     using Business.SeedData;
-    using Common;
     using Common.Extensions;
 
     public class SeedDataManager : ISeedDataManager

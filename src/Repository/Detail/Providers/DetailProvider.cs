@@ -11,7 +11,6 @@
     using Business.DetailType.Models;
     using Business.Member.Models;
     using Common.Extensions;
-    using MemoryBook.Common;
     using Microsoft.Extensions.Caching.Memory;
 
     public class DetailProvider : IDetailProvider

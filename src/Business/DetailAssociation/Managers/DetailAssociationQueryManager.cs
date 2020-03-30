@@ -10,7 +10,6 @@
     using Extensions;
     using Microsoft.EntityFrameworkCore;
     using Models;
-    using MemoryBook.Common;
     using MemoryBook.Common.Extensions;
 
     public class DetailAssociationQueryManager : IDetailAssociationQueryManager

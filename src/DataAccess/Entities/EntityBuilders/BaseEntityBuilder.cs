@@ -1,8 +1,6 @@
 ﻿namespace MemoryBook.DataAccess.Entities.EntityBuilders
 {
-    using System;
     using Common.Extensions;
-    using MemoryBook.Common;
     using Microsoft.EntityFrameworkCore;
 
     public abstract class BaseEntityBuilder : IEntityBuilder

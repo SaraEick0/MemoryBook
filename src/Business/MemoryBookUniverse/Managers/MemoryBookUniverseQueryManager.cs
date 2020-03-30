@@ -6,7 +6,6 @@
     using DataAccess;
     using DataAccess.Entities;
     using Extensions;
-    using MemoryBook.Common;
     using MemoryBook.Common.Extensions;
     using Microsoft.EntityFrameworkCore;
     using Models;

@@ -1,15 +1,14 @@
 ﻿//***************************************************************************************************************
 
-using MemoryBook.Business.Member.Models;
-using NodaTime;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
 //***************************************************************************************************************
 namespace Play
 {
+    using MemoryBook.Business.Member.Models;
+    using NodaTime;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Windows.Forms;
     using System.Collections.Generic;
     using System.Text;
     using MemoryBook.Business.Detail.Models;
@@ -17,15 +16,12 @@ namespace Play
     using MemoryBook.Business.Group.Models;
     using MemoryBook.Business.Relationship.Models;
     using MemoryBook.Business.RelationshipType;
-    using MemoryBook.Common;
     using MemoryBook.Common.Extensions;
-    using MemoryBook.Repository;
     using MemoryBook.Repository.Detail.Managers;
     using MemoryBook.Repository.Group.Extensions;
     using MemoryBook.Repository.Group.Managers;
     using MemoryBook.Repository.Member.Extensions;
     using MemoryBook.Repository.Member.Managers;
-    using MemoryBook.Repository.Member.Providers;
     using MemoryBook.Repository.MemoryBookUniverse.Managers;
     using MemoryBook.Repository.SeedData;
 

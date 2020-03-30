@@ -11,7 +11,6 @@
     using MemoryBook.Business.Relationship.Managers;
     using MemoryBook.Business.RelationshipMembership.Managers;
     using MemoryBook.Business.RelationshipType.Managers;
-    using MemoryBook.Repository;
     using MemoryBook.Repository.Detail.Managers;
     using MemoryBook.Repository.Detail.Providers;
     using MemoryBook.Repository.Group.Managers;
