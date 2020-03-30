@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace Play
+﻿namespace Play
 {
+    using System;
+    using System.Configuration;
+    using System.Windows.Forms;
+    using Microsoft.Extensions.DependencyInjection;
+
     static class Program
     {
+        public static IServiceProvider ServiceProvider { get; set; }
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -16,7 +17,17 @@ namespace Play
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            ServiceCollection services = new ServiceCollection();
+
+            var connectionString = ConfigurationManager.AppSettings["ConnectionString"];
+
+            services.ConfigureServices();
+            services.AddDatabaseContexts(connectionString);
+
+            ServiceProvider = services.BuildServiceProvider();
+
+            Application.Run((Form1)ServiceProvider.GetService(typeof(Form1)));
         }
     }
 }

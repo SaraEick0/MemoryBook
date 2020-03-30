@@ -1,285 +1,265 @@
 ﻿//***************************************************************************************************************
 
+using MemoryBook.Business.Member.Models;
 using NodaTime;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SQLite;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 //***************************************************************************************************************
 namespace Play
 {
-	public partial class Form1 : Form
-	{
-		DbOps m_dbOps;
-		Group m_activeGroup;
-		Member m_mike;
-		Member m_diane;
-		Member m_lisa;
-		Member m_sara;
-		Member m_ian;
-		Member m_david;
+    using System.Collections.Generic;
+    using MemoryBook.Business.Detail.Models;
+    using MemoryBook.Business.DetailType;
+    using MemoryBook.Business.Group.Models;
+    using MemoryBook.Business.Relationship.Models;
+    using MemoryBook.Business.RelationshipType;
+    using MemoryBook.Repository;
+    using MemoryBook.Repository.Detail.Managers;
+    using MemoryBook.Repository.Group.Extensions;
+    using MemoryBook.Repository.Group.Managers;
+    using MemoryBook.Repository.Member.Extensions;
+    using MemoryBook.Repository.Member.Managers;
+    using MemoryBook.Repository.MemoryBookUniverse.Managers;
+    using MemoryBook.Repository.Relationship.Extensions;
+    using MemoryBook.Repository.Relationship.Managers;
 
-		public Form1()
-		{
-			InitializeComponent();
-			Test();
+    public partial class Form1 : Form
+    {
+        private readonly IMemoryBookUniverseManager memoryBookUniverseManager;
+        private readonly ISeedDataManager seedDataManager;
+        private readonly IMemberManager memberManager;
+        private readonly IRelationshipManager relationshipManager;
+        private readonly IGroupManager groupManager;
+        private readonly IDetailManager detailManager;
 
-		}
+        public Form1(
+            IMemoryBookUniverseManager memoryBookUniverseManager,
+            ISeedDataManager seedDataManager,
+            IMemberManager memberManager,
+            IRelationshipManager relationshipManager,
+            IGroupManager groupManager,
+            IDetailManager detailManager)
+        {
+            InitializeComponent();
 
-		//********************************************************************************
-		int updatePeriod = 100;
+            this.memoryBookUniverseManager = memoryBookUniverseManager ?? throw new ArgumentNullException(nameof(memoryBookUniverseManager));
+            this.seedDataManager = seedDataManager ?? throw new ArgumentNullException(nameof(seedDataManager));
+            this.memberManager = memberManager ?? throw new ArgumentNullException(nameof(memberManager));
+            this.relationshipManager = relationshipManager ?? throw new ArgumentNullException(nameof(relationshipManager));
+            this.groupManager = groupManager ?? throw new ArgumentNullException(nameof(groupManager));
+            this.detailManager = detailManager ?? throw new ArgumentNullException(nameof(detailManager));
+        }
 
-		private void Test()
-		{
-			m_dbOps = new DbOps();
-			m_dbOps.DbOpen();
+        //********************************************************************************
+        private void DisplayMesh(GroupReadModel group)
+        {
+            Console.WriteLine(string.Format("\n******Group {0} ******", group.Name));
+            Console.WriteLine(string.Format("\n* Members"));
+            foreach (MemberReadModel m in group.Members)
+            {
+                string mName = m.CommonName;
+                DetailReadModel mBirthday = m.GetBirthday();
 
-			// Load some canned test mesh data via code
-			LoadData();
+                Console.WriteLine(string.Format("\nGroup Member: {0}", mName));
 
-			// Display some selected mesh data
-			DisplayMesh(m_activeGroup);
+                Console.WriteLine(string.Format("  Details"));
+                foreach (DetailReadModel d in m.Details)
+                {
+                    Console.WriteLine(string.Format("    {0}", d.DetailTypeText));
+                    if (d.StartTime.HasValue)
+                        Console.WriteLine(string.Format("      {0} {1}", d.DetailType.DetailStartText, d.StartTime.ToString()));
 
-			// Test saving && loading from DB
-			SaveGroupToDb(m_activeGroup);
-			Group dbGroup = m_dbOps.DbLoadGroup("MikeEicks");
-			DisplayMesh(dbGroup);
+                    if (d.EndTime.HasValue)
+                        Console.WriteLine(string.Format("      {0} {1}", d.DetailType.DetailEndText, d.EndTime.ToString()));
 
-
-			// Some runtime tests
-			while (true)
-			{
-				UpdateDisplay(m_activeGroup);
-				Thread.Sleep(updatePeriod);
-			}
-			m_dbOps.DbClose();
-		}
-
-
-		//********************************************************************************
-		private void DisplayMesh(Group group)
-		{
-			Console.WriteLine(string.Format("\n******Group {0} ******", group.Name));
-			Console.WriteLine(string.Format("\n* Members"));
-			foreach (Member m in group.Members)
-			{
-				string mName = m.CommonName;
-				Detail mBirthday = m.GetDetail(DetailType.LifeSpan);
-				Console.WriteLine(string.Format("\nGroup Member: {0}", mName));
-
-				Console.WriteLine(string.Format("  Details"));
-				foreach (Detail d in m.Details)
-				{
-					Console.WriteLine(string.Format("    {0}", d.DetailTypeText));
-					if (d.StartTimeKnown)
-						Console.WriteLine(string.Format("      {0} {1}", d.StartTimeLabel, d.StartTime.ToString())); ;
-
-					if (d.EndTimeKnown)
-						Console.WriteLine(string.Format("      {0} {1}", d.EndTimeLabel, d.EndTime.ToString())); ;
-
-					foreach (string story in d.Stories)
-						Console.WriteLine(string.Format("      {0}", story));
-				}
+                    Console.WriteLine(string.Format("        {0}", d.Story));
+                }
 
 
-				Console.WriteLine(string.Format("\n  Relationships"));
-				Member relMember;
-				string relKind;
-				foreach (Relationship rel in m.Relationships)
-				{
-					if (m == rel.Member1)
-					{
-						relMember = rel.Member2;
-						relKind = rel.Member1Kind;
-					}
-					else
-					{
-						relMember = rel.Member1;
-						relKind = rel.Member2Kind;
-					}
+                Console.WriteLine(string.Format("\n  Relationships"));
+                foreach (RelationshipReadModel rel in m.Relationships)
+                {
+                    var self = rel.Memberships.FirstOrDefault(x => x.MemberId == m.Id).Member;
+                    var other = rel.Memberships.FirstOrDefault(x => x.MemberId != m.Id);
 
-					string relName = relMember.CommonName;
-					Detail relBirthday = relMember.GetDetail(DetailType.LifeSpan);
+                    string relName = other.Member.CommonName;
+                    DetailReadModel relBirthday = other.Member.GetBirthday();
 
-					if (mBirthday.StartTime <= relBirthday.StartTime)
-					{
-						string timeYounger = Analytics.GetTimeBetween(mBirthday.StartTime, relBirthday.StartTime, PeriodUnits.YearMonthDay, true);
-						Console.WriteLine(string.Format("    {0} is {1} to {2}, who is {3} younger than {4}", m.CommonName, relKind, relName, timeYounger, mName));
-					}
-					else
-					{
-						string timeOlder = Analytics.GetTimeBetween(relBirthday.StartTime, mBirthday.StartTime, PeriodUnits.YearMonthDay, true);
-						Console.WriteLine(string.Format("    {0} is {1} to {2}, who is {3} older than {4}", m.CommonName, relKind, relName, timeOlder, mName));
-					}
+                    if (mBirthday.StartTime <= relBirthday.StartTime)
+                    {
+                        string timeYounger = Analytics.GetTimeBetween(mBirthday.StartTime.Value, relBirthday.StartTime.Value,
+                            PeriodUnits.YearMonthDay, true);
+                        Console.WriteLine(string.Format("    {0} is {1} to {2}, who is {3} younger than {4}",
+                            m.CommonName, other.MemberRelationshipType.Code, relName, timeYounger, mName));
+                    }
+                    else
+                    {
+                        string timeOlder = Analytics.GetTimeBetween(relBirthday.StartTime.Value, mBirthday.StartTime.Value,
+                            PeriodUnits.YearMonthDay, true);
+                        Console.WriteLine(string.Format("    {0} is {1} to {2}, who is {3} older than {4}",
+                            m.CommonName, other.MemberRelationshipType.Code, relName, timeOlder, mName));
+                    }
 
-					foreach (Detail d in rel.Details)
-					{
-						Console.WriteLine(string.Format("      {0}", d.DetailTypeText));
-						if (d.StartTimeKnown)
-							Console.WriteLine(string.Format("        {0} : {1}", d.StartTimeLabel, d.StartTime.ToString())); ;
+                    foreach (DetailReadModel d in rel.Details)
+                    {
+                        Console.WriteLine(string.Format("      {0}", d.DetailTypeText));
+                        if (d.StartTime.HasValue)
+                            Console.WriteLine(string.Format("        {0} : {1}", d.DetailType.DetailStartText,
+                                d.StartTime.ToString()));
+                        ;
 
-						if (d.EndTimeKnown)
-							Console.WriteLine(string.Format("        {0}", d.EndTimeLabel, d.EndTime.ToString())); ;
+                        if (d.EndTime.HasValue)
+                            Console.WriteLine(string.Format("        {0}", d.DetailType.DetailEndText, d.EndTime.ToString()));
+                        ;
+                        
+                        Console.WriteLine(string.Format("        {0}", d.Story));
+                    }
+                }
+            }
 
-						foreach (string story in d.Stories)
-							Console.WriteLine(string.Format("        {0}", story));
-					}
-				}
-			}
+            Console.WriteLine(string.Format("\nFun Facts!"));
 
-			Console.WriteLine(string.Format("\nFun Facts!"));
-			Relationship rSpouse = m_mike.GetRelationship(m_diane, "Wife");
-			Detail wedding = rSpouse.GetDetail(DetailType.Wedding);
+            var mike = group.GetMember("Mike");
+            RelationshipReadModel rSpouse = mike.GetRelationship(RelationshipTypeEnum.Wife);
+            DetailReadModel wedding = rSpouse.GetDetail(DetailTypeEnum.Wedding);
 
-			Member lisa = group.GetMember("Lisa");
-			Detail lBirthday = lisa.GetDetail(DetailType.LifeSpan);
-			string howLong = Analytics.GetTimeBetween(wedding.StartTime, lBirthday.StartTime, PeriodUnits.YearMonthDay, true);
-			Console.WriteLine(string.Format("  Lisa was born {0} after her parents were married", howLong));
+            MemberReadModel lisa = group.GetMember("Lisa");
+            DetailReadModel lBirthday = lisa.GetDetail(DetailTypeEnum.LifeSpan);
+            string howLong =
+                Analytics.GetTimeBetween(wedding.StartTime.Value, lBirthday.StartTime.Value, PeriodUnits.YearMonthDay, true);
+            Console.WriteLine(string.Format("  Lisa was born {0} after her parents were married", howLong));
 
-			Member sara = group.GetMember("Sara");
-			Detail sBirthday = sara.GetDetail(DetailType.LifeSpan);
-			howLong = Analytics.GetTimeBetween(wedding.StartTime, sBirthday.StartTime, PeriodUnits.YearMonthDay, true);
-			Console.WriteLine(string.Format("  Sara was born {0} after her parents were married", howLong));
+            MemberReadModel sara = group.GetMember("Sara");
+            DetailReadModel sBirthday = sara.GetDetail(DetailTypeEnum.LifeSpan);
+            howLong = Analytics.GetTimeBetween(wedding.StartTime.Value, sBirthday.StartTime.Value, PeriodUnits.YearMonthDay, true);
+            Console.WriteLine(string.Format("  Sara was born {0} after her parents were married", howLong));
 
-			howLong = Analytics.GetTimeBetween(lBirthday.StartTime, sBirthday.StartTime, PeriodUnits.YearMonthDay, true);
-			Console.WriteLine(string.Format("  Sara was born {0} after Lisa was born", howLong));
+            howLong = Analytics.GetTimeBetween(lBirthday.StartTime.Value, sBirthday.StartTime.Value, PeriodUnits.YearMonthDay,
+                true);
+            Console.WriteLine(string.Format("  Sara was born {0} after Lisa was born", howLong));
 
-		}
+        }
 
 
-		//********************************************************************************
-		int periodUnitsIndex = 1;
-		PeriodUnits[] puOptions =
-		{
-			PeriodUnits.None,
-			PeriodUnits.Years,
-			PeriodUnits.Months,
-			PeriodUnits.Weeks,
-			PeriodUnits.Days,
-			PeriodUnits.YearMonthDay,
-			PeriodUnits.AllDateUnits,
-			PeriodUnits.Hours,
-			PeriodUnits.Minutes,
-			PeriodUnits.Seconds,
-			PeriodUnits.HourMinuteSecond,
-			//PeriodUnits.Milliseconds,
-			//PeriodUnits.Ticks,
-			//PeriodUnits.Nanoseconds,
-			PeriodUnits.AllTimeUnits,
-			PeriodUnits.DateAndTime,
-			//PeriodUnits.AllUnits
-		};
+        //********************************************************************************
+        int periodUnitsIndex = 1;
 
-		private void UpdateDisplay(Group group)
-		{
-			string puText = puOptions[periodUnitsIndex].ToString();
-			Console.WriteLine("\n******************");
-			foreach (Member m in group.Members)
-			{
-				string mName = m.CommonName;
-				Detail mBirthday = m_mike.GetDetail(DetailType.LifeSpan);
-				string mAge = Analytics.GetTimeSinceStart(mBirthday, puOptions[periodUnitsIndex], true);
-				Console.WriteLine(string.Format("{0} is {1}  ({2})", mName, mAge, puText));
-			}
-			if (puOptions[periodUnitsIndex] == PeriodUnits.DateAndTime)
-			{
-				updatePeriod = 2000;
-				periodUnitsIndex = 1;
-			}
-			else
-				++periodUnitsIndex;
+        PeriodUnits[] puOptions =
+        {
+            PeriodUnits.None,
+            PeriodUnits.Years,
+            PeriodUnits.Months,
+            PeriodUnits.Weeks,
+            PeriodUnits.Days,
+            PeriodUnits.YearMonthDay,
+            PeriodUnits.AllDateUnits,
+            PeriodUnits.Hours,
+            PeriodUnits.Minutes,
+            PeriodUnits.Seconds,
+            PeriodUnits.HourMinuteSecond,
+            //PeriodUnits.Milliseconds,
+            //PeriodUnits.Ticks,
+            //PeriodUnits.Nanoseconds,
+            PeriodUnits.AllTimeUnits,
+            PeriodUnits.DateAndTime,
+            //PeriodUnits.AllUnits
+        };
 
-		}
+        private void UpdateDisplay(GroupReadModel group)
+        {
+            string puText = puOptions[periodUnitsIndex].ToString();
+            Console.WriteLine("\n******************");
+            foreach (MemberReadModel member in group.Members)
+            {
+                string mName = member.CommonName;
+                DetailReadModel mBirthday = member.GetBirthday();
+                string mAge = Analytics.GetTimeSinceStart(mBirthday, puOptions[periodUnitsIndex], true);
+                Console.WriteLine(string.Format("{0} is {1}  ({2})", mName, mAge, puText));
+            }
 
-		//********************************************************************************
-		//********************************************************************************
+            if (puOptions[periodUnitsIndex] == PeriodUnits.DateAndTime)
+            {
+                periodUnitsIndex = 1;
+            }
+            else
+            {
+                ++periodUnitsIndex;
+            }
+        }
 
-		private void LoadData()
-		{
-			m_activeGroup = new Group("MikeEicks");
+        /// <summary>
+        /// Need to update this, obviously this is dumb.
+        /// </summary>
+        /// <returns></returns>
+        private async Task LoadSeedData()
+        {
+            await this.seedDataManager.LoadSeedData();
+        }
 
-			// Add members and their details
-			// *** Mike
-			m_mike = m_activeGroup.AddMember("Michael David Eick");
-			m_mike.CommonName = "Mike";
-			m_mike.AddBirthday(new DateTime(1956, 12, 1), "Mt. Clemens, MI");
+        private async Task<GroupReadModel> LoadData(Guid universeId)
+        {
+            var group = await this.groupManager.CreateGroup(universeId, "TheMikeEicks", "The Mike Eicks", "The family of Diane and Michael Eick");
 
-			// *** Diane
-			m_diane = m_activeGroup.AddMember("Diane Gail Eick");
-			m_diane.CommonName = "Diane";
-			m_diane.AddBirthday(new DateTime(1957, 1, 25), "Rochester, MI");
+            var mike = await this.memberManager.CreateMember(universeId, "Michael", "David", "Eick", "Mike");
+            var diane = await this.memberManager.CreateMember(universeId, "Diane", "Gail", "Eick", "Diane");
+            var lisa = await this.memberManager.CreateMember(universeId, "Lisa", "Jean", "Eick", "Lisa");
+            var sara = await this.memberManager.CreateMember(universeId, "Sara", "Ann", "Eick", "Sara");
+            var ian = await this.memberManager.CreateMember(universeId, "Ian", "Gilmore", "Mitchel", "Ian");
+            var david = await this.memberManager.CreateMember(universeId, "David", "Randolph", "Ulmer", "David");
 
-			// *** Lisa
-			m_lisa = m_activeGroup.AddMember("Lisa Jean Eick");
-			m_lisa.CommonName = "Lisa";
-			m_lisa.AddBirthday(new DateTime(1988, 2, 21), "Rochester, MI");
+            var allMembers = new List<MemberReadModel>
+            {
+                mike, diane, lisa, sara, ian, david
+            };
 
-			// *** Sara
-			m_sara = m_activeGroup.AddMember("Sara Ann Eick");
-			m_sara.CommonName = "Sara";
-			m_sara.AddBirthday(new DateTime(1993, 5, 11), "Rochester, MI");
+            await this.groupManager.AddMembersToGroup(universeId, group, allMembers.ToList())
+                .ConfigureAwait(false);
 
-			// *** Ian
-			m_ian = m_activeGroup.AddMember("Ian Gilmore Mitchel");
-			m_ian.CommonName = "Ian";
-			m_ian.AddBirthday(new DateTime(1993, 1, 19), "Reno, NV");
+            await this.detailManager.CreateBirthday(sara, mike, new DateTime(1956, 12, 1), "Mt. Clemens, MI");
+            await this.detailManager.CreateBirthday(sara, diane, new DateTime(1957, 1, 25), "Rochester, MI");
+            await this.detailManager.CreateBirthday(sara, lisa, new DateTime(1988, 2, 21), "Rochester, MI");
+            await this.detailManager.CreateBirthday(sara, sara, new DateTime(1993, 5, 11), "Rochester, MI");
+            await this.detailManager.CreateBirthday(sara, ian, new DateTime(1993, 1, 19), "Reno, NV");
+            await this.detailManager.CreateBirthday(sara, david, new DateTime(1991, 5, 25), "Grosse Pointe, MI");
 
-			// *** David
-			m_david = m_activeGroup.AddMember("David ? Ulmer");
-			m_david.CommonName = "David";
-			m_david.AddBirthday(new DateTime(1991, 4, 1), "Grosse Pointe, MI");
+            await this.relationshipManager.CreateRelationship(mike, diane, RelationshipTypeEnum.Husband, RelationshipTypeEnum.Wife, new DateTime(1986, 6, 14), null);
 
-			// Add Member Relationships
-			Relationship rel;
-			m_mike.AddRelationShip("Husband", m_diane, "Wife", out rel);
-			Detail d = rel.AddDetail(DetailType.Wedding, "Mike & Diane Married", new DateTime(1986, 6, 14));
-			d.Stories.Add("St. Johns Lutheran Church");
-			d.Stories.Add("New Baltimore");
+            await this.relationshipManager.CreateRelationship(mike, lisa, RelationshipTypeEnum.Father, RelationshipTypeEnum.Daughter, new DateTime(1988, 2, 21), null);
+            await this.relationshipManager.CreateRelationship(diane, lisa, RelationshipTypeEnum.Mother, RelationshipTypeEnum.Daughter, new DateTime(1988, 2, 21), null);
+            await this.relationshipManager.CreateRelationship(mike, sara, RelationshipTypeEnum.Father, RelationshipTypeEnum.Daughter, new DateTime(1993, 05, 11), null);
+            await this.relationshipManager.CreateRelationship(diane, sara, RelationshipTypeEnum.Mother, RelationshipTypeEnum.Daughter, new DateTime(1993, 05, 11), null);
 
-			m_mike.AddRelationShip("Father", m_lisa, "Daughter", out rel);
-			m_mike.AddRelationShip("Father", m_sara, "Daughter", out rel);
+            await this.relationshipManager.CreateRelationship(lisa, sara, RelationshipTypeEnum.Sister, RelationshipTypeEnum.Sister, new DateTime(1993, 05, 11), null);
+            await this.relationshipManager.CreateRelationship(lisa, sara, RelationshipTypeEnum.Sister, RelationshipTypeEnum.Friend, new DateTime(2011, 05, 11), null);
 
-			m_diane.AddRelationShip("Mother", m_lisa, "Daughter", out rel);
-			m_diane.AddRelationShip("Mother", m_sara, "Daughter", out rel);
+            await this.relationshipManager.CreateRelationship(david, sara, RelationshipTypeEnum.Boyfriend, RelationshipTypeEnum.Girlfriend, new DateTime(2018, 10, 26), null);
+            await this.relationshipManager.CreateRelationship(ian, lisa, RelationshipTypeEnum.Boyfriend, RelationshipTypeEnum.Girlfriend, new DateTime(2018, 10, 11), null);
 
-			m_lisa.AddRelationShip("Seestra", m_sara, "Seestra", out rel);
+            await this.detailManager.CreateWedding(mike, mike, diane, new DateTime(1986, 6, 14), "St. Johns Lutheran Church in New Baltimore, MI")
+                .ConfigureAwait(false);
 
-			m_lisa.AddRelationShip("Homie", m_ian, "Possee", out rel);
-			m_sara.AddRelationShip("Homie", m_david, "Possee", out rel);
+            var stevenWeddingDate = new DateTime(2020, 2, 29);
+            
+            await this.detailManager.CreateEvent(mike, allMembers.ToList(), stevenWeddingDate, stevenWeddingDate, "Steven and Jonathan's Wedding Celebration")
+                .ConfigureAwait(false);
 
-			// Add some details
-			d = new Detail(DetailType.Event);
-			d.StartTimeKnown = true;
-			d.StartTime = new DateTime(2020, 2, 29);
-			d.Stories.Add("Went to Steven and Jonathan's Wedding Celebration");
-			m_mike.Details.Add(d);
-			m_diane.Details.Add(d);
-			m_lisa.Details.Add(d);
-			m_sara.Details.Add(d);
-			m_ian.Details.Add(d);
-			m_david.Details.Add(d);
-		}
+            return group;
+        }
 
-			//********************************************************************************
-			private void SaveGroupToDb(Group group)
-		{
-			m_dbOps.DbClearAllData();
-			m_dbOps.DbAddGroup(group);
-			m_dbOps.DbAddMember(group, m_mike);
-			m_dbOps.DbAddMember(group, m_diane);
-			m_dbOps.DbAddMember(group, m_lisa);
-			m_dbOps.DbAddMember(group, m_sara);
-			m_dbOps.DbAddMember(group, m_ian);
-			m_dbOps.DbAddMember(group, m_david);
-			m_dbOps.DbAddAllRelationships(group);
-		}
-	}
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            await this.LoadSeedData().ConfigureAwait(false);
+
+            var universeId = await this.memoryBookUniverseManager.GetOrCreateUniverse("TestUniverse").ConfigureAwait(false);
+
+            // Load some canned test mesh data via code
+            GroupReadModel group = await this.LoadData(universeId).ConfigureAwait(false);
+
+            // Display some selected mesh data
+            DisplayMesh(group);
+        }
+    }
 }

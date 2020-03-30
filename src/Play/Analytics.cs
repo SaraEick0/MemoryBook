@@ -1,28 +1,18 @@
 ﻿//***************************************************************************************************************
-
-using NodaTime;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SQLite;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
 namespace Play
 {
+    using NodaTime;
+    using System;
+	using MemoryBook.Business.Detail.Models;
+
+    //***************************************************************************************************************
 	//***************************************************************************************************************
-	//***************************************************************************************************************
-	static public class Analytics
+	public static class Analytics
 	{
 
-		public static string GetTimeSinceStart(Detail d, PeriodUnits pu, bool label)
+		public static string GetTimeSinceStart(DetailReadModel d, PeriodUnits pu, bool label)
 		{
-			return GetTimeBetween(d.StartTime, DateTime.Now, pu, label);
+			return GetTimeBetween(d.StartTime.Value, DateTime.Now, pu, label);
 		}
 
 
@@ -55,9 +45,6 @@ namespace Play
 
 			if ((pu & PeriodUnits.Seconds) != 0)
 				s = s + string.Format("{0}{1}{2}", string.IsNullOrEmpty(s) ? "" : " ", period.Seconds, label ? " Seconds" : "");
-
-			//if ((pu & PeriodUnits.Milliseconds) != 0)
-			//	s = s + string.Format("{0}{1}{2}", string.IsNullOrEmpty(s) ? "" : " ", period.Milliseconds, label ? " Milliseconds" : "");
 
 			return s;
 		}
