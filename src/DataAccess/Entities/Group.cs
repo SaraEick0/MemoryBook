@@ -5,7 +5,7 @@
     using System.ComponentModel.DataAnnotations;
     using Interfaces;
 
-    public class Group : IHasIdProperty, IHasCodeProperty
+    public class Group : IHasIdProperty, IHasCodeProperty, IHasNameProperty
     {
         public Guid Id { get; set; }
 
@@ -23,10 +23,6 @@
 
         public string Description { get; set; }
 
-        public IList<Detail> Details { get; set; }
-
         public IList<GroupMembership> GroupMemberships { get; set; }
-
-        public List<DetailAssociation> DetailAssociations { get; set; }
     }
 }

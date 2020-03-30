@@ -7,6 +7,8 @@
     using DataAccess.Entities;
     using Extensions;
     using MemoryBook.Business.Detail.Models;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using MemoryBook.DataAccess;
     using Microsoft.EntityFrameworkCore;
 
@@ -16,13 +18,17 @@
 
         public DetailQueryManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task<IList<DetailReadModel>> GetAllDetails(Guid memoryBookUniverseId)
         {
             return await dbContext.Set<Detail>()
                 .AsNoTracking()
+                .Include(x => x.DetailType)
+                .Include(x => x.Creator)
+                .Include(x => x.Permissions)
                 .Where(x => x.Creator == null || x.Creator.MemoryBookUniverseId == memoryBookUniverseId)
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
@@ -37,6 +43,9 @@
 
             return await dbContext.Set<Detail>()
                 .AsNoTracking()
+                .Include(x => x.DetailType)
+                .Include(x => x.Creator)
+                .Include(x => x.Permissions)
                 .Where(x => x.Creator == null || x.Creator.MemoryBookUniverseId == memoryBookUniverseId)
                 .Where(x => detailIds.Contains(x.Id))
                 .Select(x => x.ToReadModel())

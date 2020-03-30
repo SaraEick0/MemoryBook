@@ -6,6 +6,8 @@
     using System.Threading.Tasks;
     using DataAccess;
     using DataAccess.Entities;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using Microsoft.EntityFrameworkCore;
     using Models;
 
@@ -15,7 +17,8 @@
 
         public GroupMembershipCommandManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task<IList<Guid>> CreateGroupMembership(Guid memoryBookUniverseId, params GroupMembershipCreateModel[] models)
@@ -25,7 +28,7 @@
                 return new List<Guid>();
             }
 
-            IEnumerable<GroupMembership> entities = models.Select(model => CreateEntity(memoryBookUniverseId, model));
+            IList<GroupMembership> entities = models.Select(model => CreateEntity(memoryBookUniverseId, model)).ToList();
 
             this.dbContext.AddRange(entities);
 

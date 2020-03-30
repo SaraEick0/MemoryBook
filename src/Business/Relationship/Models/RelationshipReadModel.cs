@@ -8,10 +8,15 @@
 
     public class RelationshipReadModel : RelationshipModelBase, IHasIdProperty
     {
+        public Guid MemoryBookUniverseId { get; set; }
+
         public Guid Id { get; set; }
 
         public IList<RelationshipMembershipReadModel> Memberships { get; set; }
 
+        /// <summary>
+        /// NOTE: Not populated by entity framework!
+        /// </summary>
         public IList<DetailReadModel> Details { get; set; }
     }
 }

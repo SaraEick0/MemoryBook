@@ -6,6 +6,8 @@
     using System.Threading.Tasks;
     using DataAccess.Entities;
     using Extensions;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using MemoryBook.DataAccess;
     using Microsoft.EntityFrameworkCore;
     using Models;
@@ -16,7 +18,8 @@
 
         public MemberQueryManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task<IList<MemberReadModel>> GetAllMembers(Guid memoryBookUniverseId)
@@ -24,6 +27,10 @@
             return await dbContext.Set<Member>()
                 .AsNoTracking()
                 .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
+                .Include(x => x.RelationshipMemberships)
+                .ThenInclude(x => x.Relationship)
+                .Include(x => x.CreatedDetails)
+                .Include(x => x.GroupMemberships)
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
         }
@@ -37,6 +44,10 @@
 
             return await dbContext.Set<Member>()
                 .AsNoTracking()
+                .Include(x => x.RelationshipMemberships)
+                .ThenInclude(x => x.Relationship)
+                .Include(x => x.CreatedDetails)
+                .Include(x => x.GroupMemberships)
                 .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
                 .Where(x => memberIds.Contains(x.Id))
                 .Select(x => x.ToReadModel())

@@ -6,6 +6,8 @@
     using System.Threading.Tasks;
     using DataAccess;
     using DataAccess.Entities;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using Microsoft.EntityFrameworkCore;
     using Models;
 
@@ -15,7 +17,8 @@
 
         public RelationshipMembershipCommandManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task<IList<Guid>> CreateRelationshipMembership(params RelationshipMembershipCreateModel[] models)
@@ -25,7 +28,7 @@
                 return new List<Guid>();
             }
 
-            IEnumerable<RelationshipMembership> entities = models.Select(model => CreateEntity(model));
+            IList<RelationshipMembership> entities = models.Select(CreateEntity).ToList();
 
             this.dbContext.AddRange(entities);
 

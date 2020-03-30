@@ -12,6 +12,9 @@
 
         public List<MemberReadModel> Members { get; set; } = new List<MemberReadModel>();
 
+        /// <summary>
+        /// Note: Not populated by entity framework
+        /// </summary>
         public List<DetailReadModel> Details { get; set; } = new List<DetailReadModel>();
     }
 }

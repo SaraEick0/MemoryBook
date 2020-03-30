@@ -7,28 +7,30 @@
     using Business.Detail.Models;
     using Business.DetailType;
     using Business.Member.Models;
+    using Common.Extensions;
     using Member.Extensions;
     using Providers;
 
-    public class DetailManager : IDetailManager
+    public class MemberDetailManager : IMemberDetailManager
     {
         private readonly IDetailProvider detailProvider;
         private readonly IDetailAssociationProvider detailAssociationProvider;
 
-        public DetailManager(IDetailProvider detailProvider, IDetailAssociationProvider detailAssociationProvider)
+        public MemberDetailManager(IDetailProvider detailProvider, IDetailAssociationProvider detailAssociationProvider)
         {
-            this.detailProvider = detailProvider ?? throw new ArgumentNullException(nameof(detailProvider));
-            this.detailAssociationProvider = detailAssociationProvider ?? throw new ArgumentNullException(nameof(detailAssociationProvider));
+            Contract.RequiresNotNull(detailProvider, nameof(detailProvider));
+            Contract.RequiresNotNull(detailAssociationProvider, nameof(detailAssociationProvider));
+
+            this.detailProvider = detailProvider;
+            this.detailAssociationProvider = detailAssociationProvider;
         }
 
         public async Task<DetailReadModel> CreateBirthday(MemberReadModel creator, MemberReadModel member, DateTime birthday, string birthplace = null)
         {
-            if (member == null)
-            {
-                throw new ArgumentNullException(nameof(member));
-            }
+            Contract.RequiresNotNull(creator, nameof(creator));
+            Contract.RequiresNotNull(member, nameof(member));
 
-            if (member.Details.Any(x => x.DetailType.Code.Equals(DetailTypeEnum.LifeSpan.ToString())))
+            if (member.Details != null && member.Details.Any(x => x.DetailType.Code.Equals(DetailTypeEnum.LifeSpan.ToString())))
             {
                 throw new InvalidOperationException($"Lifespan already existed for member {member.CommonName} with id {member.Id} for universe {member.MemoryBookUniverseId}");
             }
@@ -57,14 +59,8 @@
 
         public async Task<DetailReadModel> CreateEvent(MemberReadModel creator, IList<MemberReadModel> memberAttendees, DateTime? startDate, DateTime? endDate, string description)
         {
-            if (creator == null)
-            {
-                throw new ArgumentNullException(nameof(creator));
-            }
-            if (memberAttendees == null)
-            {
-                throw new ArgumentNullException(nameof(memberAttendees));
-            }
+            Contract.RequiresNotNull(creator, nameof(creator));
+            Contract.RequiresNotNullOrEmpty(memberAttendees, nameof(memberAttendees));
 
             var detail = await this.detailProvider.CreateDetail(creator.MemoryBookUniverseId, creator, description, DetailTypeEnum.Event, startDate, endDate)
                 .ConfigureAwait(false);
@@ -76,41 +72,6 @@
             {
                 member.AddDetail(detail);
             }
-
-            return detail;
-        }
-
-        public async Task<DetailReadModel> CreateWedding(MemberReadModel creator, MemberReadModel spouseOne, MemberReadModel spouseTwo, DateTime weddingDate, string weddingLocation = null)
-        {
-            if (creator == null)
-            {
-                throw new ArgumentNullException(nameof(creator));
-            }
-            if (spouseOne == null)
-            {
-                throw new ArgumentNullException(nameof(spouseOne));
-            }
-            if (spouseTwo == null)
-            {
-                throw new ArgumentNullException(nameof(spouseTwo));
-            }
-
-            string weddingLocationText = string.Empty;
-            if (!string.IsNullOrWhiteSpace(weddingLocation))
-            {
-                weddingLocationText = $" at {weddingLocation}";
-            }
-
-            string customDetailText = $"Married {weddingDate.ToShortDateString()}{weddingLocationText}";
-
-            var detail = await this.detailProvider.CreateDetail(creator.MemoryBookUniverseId, creator, customDetailText, DetailTypeEnum.Wedding, weddingDate)
-                .ConfigureAwait(false);
-
-            await this.detailAssociationProvider.CreateDetailAssociation(detail, new List<MemberReadModel> { spouseOne, spouseTwo })
-                .ConfigureAwait(false);
-
-            spouseOne.AddDetail(detail);
-            spouseTwo.AddDetail(detail);
 
             return detail;
         }

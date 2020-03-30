@@ -16,12 +16,12 @@
             typeBuilder.Has(e =>
             {
                 e.HasUniqueCode();
-                e.Property(x => x.Name)
-                    .IsRequired();
+                e.HasUniqueName();
 
                 e.HasOne(x => x.MemoryBookUniverse)
                     .WithMany(x => x.Groups)
-                    .HasForeignKey(x => x.MemoryBookUniverseId);
+                    .HasForeignKey(x => x.MemoryBookUniverseId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

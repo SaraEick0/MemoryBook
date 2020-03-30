@@ -16,8 +16,7 @@
                 Name = group.Name,
                 Code = group.Code,
                 Description = group.Description,
-                Details = group.Details?.Select(x => x.ToReadModel()).ToList(),
-                Members = group.GroupMemberships?.Select(x => x.Member.ToReadModel()).ToList()
+                Members = group.GroupMemberships?.Select(x => x.Member.ToShallowReadModel()).ToList()
             };
         }
     }

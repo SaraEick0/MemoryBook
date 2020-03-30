@@ -5,6 +5,8 @@
     using System.Threading.Tasks;
     using Business.MemoryBookUniverse.Managers;
     using Business.MemoryBookUniverse.Models;
+    using Common;
+    using Common.Extensions;
 
     public class MemoryBookUniverseManager : IMemoryBookUniverseManager
     {
@@ -14,12 +16,17 @@
         public MemoryBookUniverseManager(IMemoryBookUniverseQueryManager memoryBookUniverseQueryManager,
             IMemoryBookUniverseCommandManager memoryBookUniverseCommandManager)
         {
-            this.memoryBookUniverseQueryManager = memoryBookUniverseQueryManager ?? throw new ArgumentNullException(nameof(memoryBookUniverseQueryManager));
-            this.memoryBookUniverseCommandManager = memoryBookUniverseCommandManager ?? throw new ArgumentNullException(nameof(memoryBookUniverseCommandManager));
+            Contract.RequiresNotNull(memoryBookUniverseQueryManager, nameof(memoryBookUniverseQueryManager));
+            Contract.RequiresNotNull(memoryBookUniverseCommandManager, nameof(memoryBookUniverseCommandManager));
+
+            this.memoryBookUniverseQueryManager = memoryBookUniverseQueryManager;
+            this.memoryBookUniverseCommandManager = memoryBookUniverseCommandManager;
         }
 
-        public async Task<Guid> GetOrCreateUniverse(string universeName)
+        public async Task<Guid> GetUniverse(string universeName)
         {
+            Contract.RequiresNotNullOrWhitespace(universeName, nameof(universeName));
+
             var universes = await this.memoryBookUniverseQueryManager.GetMemoryBookUniverses(universeName)
                 .ConfigureAwait(false);
 
@@ -27,6 +34,13 @@
             {
                 return universes.First().Id;
             }
+
+            return Guid.Empty;
+        }
+
+        public async Task<Guid> CreateUniverse(string universeName)
+        {
+            Contract.RequiresNotNullOrWhitespace(universeName, nameof(universeName));
 
             var createModel = new MemoryBookUniverseCreateModel
             {
@@ -37,6 +51,20 @@
                 .ConfigureAwait(false);
 
             return ids.First();
+        }
+
+        public async Task DeleteUniverse(Guid memoryBookUniverseId)
+        {
+            var universes = await this.memoryBookUniverseQueryManager.GetAllMemoryBookUniverses()
+                .ConfigureAwait(false);
+
+            if (!universes.Any(x => x.Id == memoryBookUniverseId))
+            {
+                return;
+            }
+
+            await this.memoryBookUniverseCommandManager.DeleteMemoryBookUniverse(memoryBookUniverseId)
+                .ConfigureAwait(false);
         }
     }
 }

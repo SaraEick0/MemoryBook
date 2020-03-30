@@ -3,8 +3,10 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Common.Extensions;
     using Configuration;
     using DataAccess;
+    using MemoryBook.Common;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
@@ -21,18 +23,22 @@
             IOptions<ApplicationConfiguration> applicationConfiguration,
             MemoryBookDbContext databaseContext)
         {
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            this.applicationConfiguration = applicationConfiguration.Value ?? throw new ArgumentNullException(nameof(applicationConfiguration));
-            this.databaseContext = databaseContext ?? throw new ArgumentNullException(nameof(databaseContext));
+            Contract.RequiresNotNull(logger, nameof(logger));
+            Contract.RequiresNotNull(applicationConfiguration, nameof(applicationConfiguration));
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+
+            this.logger = logger;
+            this.applicationConfiguration = applicationConfiguration.Value;
+            this.databaseContext = databaseContext;
         }
 
         private ApplicationOptions ApplicationOptions => this.applicationConfiguration.Application;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            this.logger.LogDebug("Business Rule Database Migration background task execution starting.");
+            this.logger.LogDebug("Memory Book Database Migration background task execution starting.");
 
-            stoppingToken.Register(() => this.logger.LogDebug($"Business Rule Database Migration background task is stopping."));
+            stoppingToken.Register(() => this.logger.LogDebug("Memory Book Database Migration background task is stopping."));
 
             if (!stoppingToken.IsCancellationRequested)
             {
@@ -46,7 +52,7 @@
 
             await Task.FromResult(Task.CompletedTask).ConfigureAwait(false);
 
-            this.logger.LogDebug("Business Rule Database Migration background task execution completed successfully.");
+            this.logger.LogDebug("Memory Book Database Migration background task execution completed successfully.");
         }
     }
 }

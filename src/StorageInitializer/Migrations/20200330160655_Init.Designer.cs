@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MemoryBook.StorageInitializer.Migrations
 {
     [DbContext(typeof(MemoryBookDbContext))]
-    [Migration("20200330050126_Init")]
+    [Migration("20200330160655_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -207,6 +207,9 @@ namespace MemoryBook.StorageInitializer.Migrations
 
                     b.HasIndex("MemoryBookUniverseId");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Group");
                 });
 
@@ -240,7 +243,7 @@ namespace MemoryBook.StorageInitializer.Migrations
                         .HasDefaultValueSql("NEWSEQUENTIALID()");
 
                     b.Property<string>("CommonName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -261,7 +264,15 @@ namespace MemoryBook.StorageInitializer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CommonName")
+                        .IsUnique()
+                        .HasFilter("[CommonName] IS NOT NULL");
+
                     b.HasIndex("MemoryBookUniverseId");
+
+                    b.HasIndex("FirstName", "MiddleName", "LastName")
+                        .IsUnique()
+                        .HasFilter("[MiddleName] IS NOT NULL");
 
                     b.ToTable("Member");
                 });
@@ -282,6 +293,9 @@ namespace MemoryBook.StorageInitializer.Migrations
                         .HasMaxLength(1000);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("MemoryBookUniverses");
                 });
@@ -367,7 +381,7 @@ namespace MemoryBook.StorageInitializer.Migrations
                     b.HasOne("MemoryBook.DataAccess.Entities.Member", "Creator")
                         .WithMany("CreatedDetails")
                         .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MemoryBook.DataAccess.Entities.DetailType", "DetailType")
@@ -386,7 +400,7 @@ namespace MemoryBook.StorageInitializer.Migrations
                     b.HasOne("MemoryBook.DataAccess.Entities.Detail", "Detail")
                         .WithMany("DetailAssociations")
                         .HasForeignKey("DetailId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MemoryBook.DataAccess.Entities.EntityType", "EntityType")
@@ -413,13 +427,13 @@ namespace MemoryBook.StorageInitializer.Migrations
                     b.HasOne("MemoryBook.DataAccess.Entities.Detail", "Detail")
                         .WithMany("Permissions")
                         .HasForeignKey("DetailId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MemoryBook.DataAccess.Entities.Member", "Member")
                         .WithMany("Permissions")
                         .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -437,13 +451,13 @@ namespace MemoryBook.StorageInitializer.Migrations
                     b.HasOne("MemoryBook.DataAccess.Entities.Group", "Group")
                         .WithMany("GroupMemberships")
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MemoryBook.DataAccess.Entities.Member", "Member")
                         .WithMany("GroupMemberships")
                         .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -476,13 +490,13 @@ namespace MemoryBook.StorageInitializer.Migrations
                     b.HasOne("MemoryBook.DataAccess.Entities.RelationshipType", "MemberRelationshipType")
                         .WithMany("RelationshipMemberships")
                         .HasForeignKey("MemberRelationshipTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MemoryBook.DataAccess.Entities.Relationship", "Relationship")
                         .WithMany("RelationshipMemberships")
                         .HasForeignKey("RelationshipId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

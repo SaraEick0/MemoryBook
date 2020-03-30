@@ -6,6 +6,8 @@
     using System.Threading.Tasks;
     using DataAccess;
     using DataAccess.Entities;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using Microsoft.EntityFrameworkCore;
     using Models;
 
@@ -15,7 +17,8 @@
 
         public MemoryBookUniverseCommandManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task<IList<Guid>> CreateMemoryBookUniverse(params MemoryBookUniverseCreateModel[] models)
@@ -25,7 +28,7 @@
                 return new List<Guid>();
             }
 
-            List<MemoryBookUniverse> entities = models.Select(x => CreateEntity(x)).ToList();
+            List<MemoryBookUniverse> entities = models.Select(CreateEntity).ToList();
 
             this.dbContext.AddRange(entities);
 
@@ -34,29 +37,32 @@
             return entities.Select(x => x.Id).ToList();
         }
 
-        public async Task DeleteMemoryBookUniverse(params Guid[] groupIds)
+        public async Task DeleteMemoryBookUniverse(params Guid[] memoryBookUniverseIds)
         {
-            if (groupIds == null || !groupIds.Any())
+            if (memoryBookUniverseIds == null || !memoryBookUniverseIds.Any())
             {
                 return;
             }
 
-            Dictionary<Guid, MemoryBookUniverse> groupDictionary = dbContext.Set<MemoryBookUniverse>()
+            foreach (var entry in this.dbContext.ChangeTracker.Entries().ToList())
+            {
+                this.dbContext.Entry(entry.Entity).State = EntityState.Detached;
+            }
+
+            Dictionary<Guid, MemoryBookUniverse> universeDictionary = dbContext.Set<MemoryBookUniverse>()
                 .AsNoTracking()
                 .ToDictionary(x => x.Id);
 
             IList<MemoryBookUniverse> entitiesToDelete = new List<MemoryBookUniverse>();
-            foreach (Guid id in groupIds)
+            foreach (Guid id in memoryBookUniverseIds)
             {
-                if (!groupDictionary.TryGetValue(id, out MemoryBookUniverse entity))
+                if (!universeDictionary.TryGetValue(id, out MemoryBookUniverse entity))
                 {
                     continue;
                 }
 
-                entitiesToDelete.Add(entity);
+                this.dbContext.Remove(entity);
             }
-
-            this.dbContext.RemoveRange(entitiesToDelete);
 
             await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
         }

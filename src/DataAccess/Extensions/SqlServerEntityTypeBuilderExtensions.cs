@@ -1,6 +1,8 @@
 ﻿namespace MemoryBook.DataAccess.Extensions
 {
     using System;
+    using Common;
+    using Common.Extensions;
     using Interfaces;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -11,7 +13,7 @@
             this ModelBuilder modelBuilder)
             where TEntity : class, IHasIdProperty
         {
-            modelBuilder = modelBuilder ?? throw new ArgumentNullException(nameof(modelBuilder));
+            Contract.RequiresNotNull(modelBuilder, nameof(modelBuilder));
 
             return modelBuilder.GetSqlServerBuilderFor<TEntity, Guid>();
         }
@@ -21,7 +23,7 @@
             where TId : struct, IEquatable<TId>
             where TEntity : class, IHasIdProperty
         {
-            modelBuilder = modelBuilder ?? throw new ArgumentNullException(nameof(modelBuilder));
+            Contract.RequiresNotNull(modelBuilder, nameof(modelBuilder));
 
             EntityTypeBuilder<TEntity> builder = modelBuilder.Entity<TEntity>();
 

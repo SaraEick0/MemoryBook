@@ -10,6 +10,8 @@
     using Extensions;
     using Microsoft.EntityFrameworkCore;
     using Models;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
 
     public class DetailAssociationQueryManager : IDetailAssociationQueryManager
     {
@@ -17,7 +19,8 @@
 
         public DetailAssociationQueryManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task<IList<DetailAssociationReadModel>> GetDetailAssociationByDetailId(params Guid[] detailIds)
@@ -29,6 +32,8 @@
 
             return await dbContext.Set<DetailAssociation>()
                 .AsNoTracking()
+                .Include(x => x.Detail)
+                .Include(x => x.EntityType)
                 .Where(x => detailIds.Contains(x.Id))
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
@@ -43,6 +48,8 @@
 
             return await dbContext.Set<DetailAssociation>()
                 .AsNoTracking()
+                .Include(x => x.Detail)
+                .Include(x => x.EntityType)
                 .Where(x => x.EntityType.Code.Equals(EntityTypeEnum.Member.ToString()))
                 .Where(x => memberIds.Contains(x.Id))
                 .Select(x => x.ToReadModel())
@@ -58,6 +65,8 @@
 
             return await dbContext.Set<DetailAssociation>()
                 .AsNoTracking()
+                .Include(x => x.Detail)
+                .Include(x => x.EntityType)
                 .Where(x => x.EntityType.Code.Equals(EntityTypeEnum.Group.ToString()))
                 .Where(x => groupIds.Contains(x.Id))
                 .Select(x => x.ToReadModel())
@@ -73,6 +82,8 @@
 
             return await dbContext.Set<DetailAssociation>()
                 .AsNoTracking()
+                .Include(x => x.Detail)
+                .Include(x => x.EntityType)
                 .Where(x => x.EntityType.Code.Equals(EntityTypeEnum.Relationship.ToString()))
                 .Where(x => relationshipIds.Contains(x.Id))
                 .Select(x => x.ToReadModel())

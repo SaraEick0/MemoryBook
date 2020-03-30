@@ -4,7 +4,10 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Common.Models;
     using DataAccess.Entities;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using MemoryBook.DataAccess;
     using Microsoft.EntityFrameworkCore;
     using Models;
@@ -15,29 +18,34 @@
 
         public GroupCommandManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
-        public async Task<IList<Guid>> CreateGroups(Guid memoryBookUniverseId, params GroupCreateModel[] models)
+        public async Task<MemoryBookResponseModel> CreateGroups(Guid memoryBookUniverseId, params GroupCreateModel[] models)
         {
+            MemoryBookResponseModel response = new MemoryBookResponseModel();
+
             if (models == null || !models.Any())
             {
-                return new List<Guid>();
+                return response;
             }
 
-            IEnumerable<Group> entities = models.Select(x => new Group
+            IList<Group> entities = new List<Group>();
+
+            foreach (var model in models)
             {
-                MemoryBookUniverseId = memoryBookUniverseId,
-                Code = x.Code,
-                Name = x.Name,
-                Description = x.Description
-            });
+                Group entity = CreateEntity(memoryBookUniverseId, model);
+                entities.Add(entity);
+            }
 
             this.dbContext.AddRange(entities);
 
             await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return entities.Select(x => x.Id).ToList();
+            response.Ids = entities.Select(x => x.Id).ToList();
+
+            return response;
         }
 
         public async Task UpdateGroups(Guid memoryBookUniverseId, params GroupUpdateModel[] models)
@@ -98,6 +106,17 @@
             this.dbContext.RemoveRange(entitiesToDelete);
 
             await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        private static Group CreateEntity(Guid memoryBookUniverseId, GroupCreateModel model)
+        {
+            return new Group
+            {
+                MemoryBookUniverseId = memoryBookUniverseId,
+                Code = model.Code,
+                Name = model.Name,
+                Description = model.Description
+            };
         }
     }
 }

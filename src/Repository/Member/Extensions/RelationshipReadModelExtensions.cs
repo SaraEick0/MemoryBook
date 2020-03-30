@@ -1,6 +1,7 @@
-﻿namespace MemoryBook.Repository.Relationship.Extensions
+﻿namespace MemoryBook.Repository.Member.Extensions
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Business.Detail.Models;
     using Business.DetailType;
@@ -11,6 +12,11 @@
     {
         public static void AddDetail(this RelationshipReadModel relationship, DetailReadModel detail)
         {
+            if (relationship.Details == null)
+            {
+                relationship.Details = new List<DetailReadModel>();
+            }
+
             relationship.Details.Add(detail);
         }
 

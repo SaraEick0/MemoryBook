@@ -2,7 +2,6 @@
 {
     using System.Linq;
     using DataAccess.Entities;
-    using Detail.Extensions;
     using Models;
     using RelationshipMembership.Extensions;
 
@@ -10,13 +9,21 @@
     {
         public static RelationshipReadModel ToReadModel(this Relationship entity)
         {
+            var model = entity.ToShallowReadModel();
+
+            model.Memberships = entity.RelationshipMemberships?.Select(x => x.ToReadModel()).ToList();
+
+            return model;
+        }
+
+        public static RelationshipReadModel ToShallowReadModel(this Relationship entity)
+        {
             return new RelationshipReadModel
             {
                 Id = entity.Id,
-                Memberships = entity.RelationshipMemberships?.Select(x=> x.ToReadModel()).ToList(),
                 StartDate = entity.StartTime,
                 EndDate = entity.EndTime,
-                Details = entity.DetailAssociations?.Select(x => x.Detail.ToReadModel()).ToList()
+                MemoryBookUniverseId = entity.MemoryBookUniverseId
             };
         }
     }

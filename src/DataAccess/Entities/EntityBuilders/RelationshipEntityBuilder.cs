@@ -17,7 +17,8 @@
             {
                 e.HasOne(x => x.MemoryBookUniverse)
                     .WithMany(x => x.Relationships)
-                    .HasForeignKey(x => x.MemoryBookUniverseId);
+                    .HasForeignKey(x => x.MemoryBookUniverseId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

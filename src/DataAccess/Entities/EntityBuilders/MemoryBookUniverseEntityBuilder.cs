@@ -15,8 +15,7 @@
         {
             typeBuilder.Has(e =>
             {
-                e.Property(x => x.Name)
-                    .IsRequired();
+                e.HasUniqueName();
             });
         }
     }

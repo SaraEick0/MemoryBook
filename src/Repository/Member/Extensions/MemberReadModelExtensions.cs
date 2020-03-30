@@ -1,5 +1,6 @@
 ﻿namespace MemoryBook.Repository.Member.Extensions
 {
+    using System.Collections.Generic;
     using System.Linq;
     using Business.Detail.Models;
     using Business.DetailType;
@@ -21,7 +22,27 @@
         /// <param name="detail"></param>
         public static void AddDetail(this MemberReadModel member, DetailReadModel detail)
         {
-            member?.Details?.Add(detail);
+            if (member.Details == null)
+            {
+                member.Details = new List<DetailReadModel>();
+            }
+
+            member.Details.Add(detail);
+        }
+
+        /// <summary>
+        /// After the relationship has been saved to the database, this will just add it to the member model. I don't think we would care about doing this outside of test data.
+        /// </summary>
+        /// <param name="member"></param>
+        /// <param name="relationship"></param>
+        public static void AddRelationship(this MemberReadModel member, RelationshipReadModel relationship)
+        {
+            if (member.Relationships == null)
+            {
+                member.Relationships = new List<RelationshipReadModel>();
+            }
+
+            member.Relationships.Add(relationship);
         }
 
         public static DetailReadModel GetDetail(this MemberReadModel member, DetailTypeEnum detailType)

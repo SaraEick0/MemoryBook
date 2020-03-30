@@ -7,6 +7,8 @@
     using Business.EntityType.Managers;
     using Business.RelationshipType.Managers;
     using Business.SeedData;
+    using Common;
+    using Common.Extensions;
 
     public class SeedDataManager : ISeedDataManager
     {
@@ -25,12 +27,19 @@
             IDetailTypeCommandManager detailTypeCommandManager,
             IEntityTypeCommandManager entityTypeCommandManager)
         {
-            this.relationshipTypeQueryManager = relationshipTypeQueryManager ?? throw new ArgumentNullException(nameof(relationshipTypeQueryManager));
-            this.detailTypeQueryManager = detailTypeQueryManager ?? throw new ArgumentNullException(nameof(detailTypeQueryManager));
-            this.entityTypeQueryManager = entityTypeQueryManager ?? throw new ArgumentNullException(nameof(entityTypeQueryManager));
-            this.relationshipTypeCommandManager = relationshipTypeCommandManager ?? throw new ArgumentNullException(nameof(relationshipTypeCommandManager));
-            this.detailTypeCommandManager = detailTypeCommandManager ?? throw new ArgumentNullException(nameof(detailTypeCommandManager));
-            this.entityTypeCommandManager = entityTypeCommandManager ?? throw new ArgumentNullException(nameof(entityTypeCommandManager));
+            Contract.RequiresNotNull(relationshipTypeQueryManager, nameof(relationshipTypeQueryManager));
+            Contract.RequiresNotNull(detailTypeQueryManager, nameof(detailTypeQueryManager));
+            Contract.RequiresNotNull(entityTypeQueryManager, nameof(entityTypeQueryManager));
+            Contract.RequiresNotNull(relationshipTypeCommandManager, nameof(relationshipTypeCommandManager));
+            Contract.RequiresNotNull(detailTypeCommandManager, nameof(detailTypeCommandManager));
+            Contract.RequiresNotNull(entityTypeCommandManager, nameof(entityTypeCommandManager));
+
+            this.relationshipTypeQueryManager = relationshipTypeQueryManager;
+            this.detailTypeQueryManager = detailTypeQueryManager;
+            this.entityTypeQueryManager = entityTypeQueryManager;
+            this.relationshipTypeCommandManager = relationshipTypeCommandManager;
+            this.detailTypeCommandManager = detailTypeCommandManager;
+            this.entityTypeCommandManager = entityTypeCommandManager;
         }
 
         public async Task LoadSeedData()

@@ -1,4 +1,4 @@
-﻿namespace MemoryBook.Repository
+﻿namespace MemoryBook.Repository.SeedData
 {
     using System.Threading.Tasks;
 

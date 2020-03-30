@@ -1,12 +1,13 @@
 ﻿namespace MemoryBook.Business.MemoryBookUniverse.Managers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using DataAccess;
     using DataAccess.Entities;
     using Extensions;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using Microsoft.EntityFrameworkCore;
     using Models;
 
@@ -16,7 +17,8 @@
 
         public MemoryBookUniverseQueryManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task<IList<MemoryBookUniverseReadModel>> GetAllMemoryBookUniverses()
@@ -29,14 +31,14 @@
 
         public async Task<IList<MemoryBookUniverseReadModel>> GetMemoryBookUniverses(params string[] names)
         {
-            if (names == null || names.Length > 0)
+            if (names == null || names.Length == 0)
             {
                 return new List<MemoryBookUniverseReadModel>();
             }
 
             return await dbContext.Set<MemoryBookUniverse>()
                 .AsNoTracking()
-                .Where(x => names.Contains(x.Name, StringComparer.OrdinalIgnoreCase))
+                .Where(x => names.Contains(x.Name))
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
         }

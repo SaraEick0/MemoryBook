@@ -18,7 +18,7 @@
                 e.HasOne(x => x.Detail)
                     .WithMany(x => x.DetailAssociations)
                     .HasForeignKey(x => x.DetailId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 e.HasOne(x => x.EntityType)
                     .WithMany(x => x.DetailAssociations)

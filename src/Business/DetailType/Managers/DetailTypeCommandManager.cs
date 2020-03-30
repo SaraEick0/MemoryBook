@@ -6,6 +6,8 @@
     using System.Threading.Tasks;
     using DataAccess;
     using DataAccess.Entities;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using Microsoft.EntityFrameworkCore;
     using Models;
 
@@ -15,7 +17,8 @@
 
         public DetailTypeCommandManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task CreateDetailType(params DetailTypeCreateModel[] models)
@@ -25,7 +28,7 @@
                 return;
             }
 
-            List<DetailType> entities = models.Select(x => CreateEntity(x)).ToList();
+            List<DetailType> entities = models.Select(CreateEntity).ToList();
 
             this.dbContext.AddRange(entities);
 

@@ -16,8 +16,8 @@
     using MemoryBook.Repository.Detail.Providers;
     using MemoryBook.Repository.Group.Managers;
     using MemoryBook.Repository.Member.Managers;
+    using MemoryBook.Repository.Member.Providers;
     using MemoryBook.Repository.MemoryBookUniverse.Managers;
-    using MemoryBook.Repository.Relationship.Managers;
     using MemoryBook.Repository.SeedData;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -26,13 +26,16 @@
         public static void ConfigureServices(this ServiceCollection services)
         {
             services.AddTransient<IGroupManager, GroupManager>();
-            services.AddTransient<IDetailManager, DetailManager>();
+            services.AddTransient<IRelationshipDetailManager, RelationshipDetailManager>();
+            services.AddTransient<IMemberDetailManager, MemberDetailManager>();
             services.AddTransient<IMemberManager, MemberManager>();
             services.AddTransient<IMemoryBookUniverseManager, MemoryBookUniverseManager>();
-            services.AddTransient<IRelationshipManager, RelationshipManager>();
             
             services.AddTransient<IDetailAssociationProvider, DetailAssociationProvider>();
             services.AddTransient<IDetailProvider, DetailProvider>();
+            services.AddTransient<IMemberProvider, MemberProvider>();
+            services.AddTransient<IRelationshipTypeProvider, RelationshipTypeProvider>();
+            services.AddTransient<IRelationshipProvider, RelationshipProvider>();
 
             services.AddTransient<ISeedDataManager, SeedDataManager>();
 
@@ -43,7 +46,9 @@
                 .AddTransient<IRelationshipTypeQueryManager, RelationshipTypeQueryManager>()
                 .AddTransient<IRelationshipTypeCommandManager, RelationshipTypeCommandManager>()
                 .AddTransient<IRelationshipCommandManager, RelationshipCommandManager>()
+                .AddTransient<IRelationshipQueryManager, RelationshipQueryManager>()
                 .AddTransient<IRelationshipMembershipCommandManager, RelationshipMembershipCommandManager>()
+                .AddTransient<IRelationshipMembershipQueryManager, RelationshipMembershipQueryManager>()
                 .AddTransient<IMemberCommandManager, MemberCommandManager>()
                 .AddTransient<IMemberQueryManager, MemberQueryManager>()
                 .AddTransient<IDetailTypeCommandManager, DetailTypeCommandManager>()

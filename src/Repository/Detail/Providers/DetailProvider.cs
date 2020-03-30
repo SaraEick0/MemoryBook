@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MemoryBook.Repository.Detail.Providers
+﻿namespace MemoryBook.Repository.Detail.Providers
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Business.Detail.Managers;
@@ -12,6 +10,8 @@ namespace MemoryBook.Repository.Detail.Providers
     using Business.DetailType.Managers;
     using Business.DetailType.Models;
     using Business.Member.Models;
+    using Common.Extensions;
+    using MemoryBook.Common;
     using Microsoft.Extensions.Caching.Memory;
 
     public class DetailProvider : IDetailProvider
@@ -23,20 +23,27 @@ namespace MemoryBook.Repository.Detail.Providers
 
         public DetailProvider(IDetailTypeQueryManager detailTypeQueryManager, IDetailCommandManager detailCommandManager, IDetailQueryManager detailQueryManager, IMemoryCache memoryCache)
         {
-            this.detailTypeQueryManager = detailTypeQueryManager ?? throw new ArgumentNullException(nameof(detailTypeQueryManager));
-            this.detailCommandManager = detailCommandManager ?? throw new ArgumentNullException(nameof(detailCommandManager));
-            this.detailQueryManager = detailQueryManager ?? throw new ArgumentNullException(nameof(detailQueryManager));
-            this.memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+            Contract.RequiresNotNull(detailTypeQueryManager, nameof(detailTypeQueryManager));
+            Contract.RequiresNotNull(detailCommandManager, nameof(detailCommandManager));
+            Contract.RequiresNotNull(detailQueryManager, nameof(detailQueryManager));
+            Contract.RequiresNotNull(memoryCache, nameof(memoryCache));
+
+            this.detailTypeQueryManager = detailTypeQueryManager;
+            this.detailCommandManager = detailCommandManager;
+            this.detailQueryManager = detailQueryManager;
+            this.memoryCache = memoryCache;
         }
 
         public async Task<DetailReadModel> CreateDetail(Guid memoryBookUniverseId, MemberReadModel creator, string customDetailText, DetailTypeEnum detailType, DateTime? startDate, DateTime? endDate = null)
         {
+            Contract.RequiresNotNull(creator, nameof(creator));
+
             var detailTypeReadModel = await this.GetDetailType(detailType).ConfigureAwait(false);
 
             DetailCreateModel detailCreateModel = new DetailCreateModel
             {
                 StartTime = startDate,
-                EndTime = endDate ?? startDate,
+                EndTime = endDate,
                 CreatorId = creator.Id,
                 CustomDetailText = customDetailText,
                 DetailTypeId = detailTypeReadModel.Id
@@ -48,6 +55,8 @@ namespace MemoryBook.Repository.Detail.Providers
 
         private async Task<DetailReadModel> CreateDetail(Guid memoryBookUniverseId, DetailCreateModel detailCreateModel)
         {
+            Contract.RequiresNotNull(detailCreateModel, nameof(detailCreateModel));
+
             var id = await this.detailCommandManager.CreateDetails(memoryBookUniverseId, detailCreateModel)
                 .ConfigureAwait(false);
 

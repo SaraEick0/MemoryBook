@@ -18,7 +18,7 @@
                 e.HasOne(x => x.Creator)
                  .WithMany(x => x.CreatedDetails)
                  .HasForeignKey(x => x.CreatorId)
-                 .OnDelete(DeleteBehavior.Restrict);
+                 .OnDelete(DeleteBehavior.Cascade);
 
                 e.HasOne(x => x.DetailType)
                  .WithMany(x => x.Details)

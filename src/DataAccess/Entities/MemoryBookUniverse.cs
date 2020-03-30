@@ -5,7 +5,7 @@
     using System.ComponentModel.DataAnnotations;
     using Interfaces;
 
-    public class MemoryBookUniverse : IHasIdProperty
+    public class MemoryBookUniverse : IHasIdProperty, IHasNameProperty
     {
         public Guid Id { get; set; }
 

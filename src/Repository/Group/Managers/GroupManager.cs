@@ -9,6 +9,9 @@
     using Business.GroupMembership.Managers;
     using Business.GroupMembership.Models;
     using Business.Member.Models;
+    using Common;
+    using Common.Extensions;
+    using Extensions;
 
     public class GroupManager : IGroupManager
     {
@@ -18,22 +21,19 @@
 
         public GroupManager(IGroupCommandManager groupCommandManager, IGroupQueryManager groupQueryManager, IGroupMembershipCommandManager groupMembershipCommandManager)
         {
-            this.groupCommandManager = groupCommandManager ?? throw new ArgumentNullException(nameof(groupCommandManager));
-            this.groupQueryManager = groupQueryManager ?? throw new ArgumentNullException(nameof(groupQueryManager));
-            this.groupMembershipCommandManager = groupMembershipCommandManager ?? throw new ArgumentNullException(nameof(groupMembershipCommandManager));
+            Contract.RequiresNotNull(groupCommandManager, nameof(groupCommandManager));
+            Contract.RequiresNotNull(groupQueryManager, nameof(groupQueryManager));
+            Contract.RequiresNotNull(groupMembershipCommandManager, nameof(groupMembershipCommandManager));
+
+            this.groupCommandManager = groupCommandManager;
+            this.groupQueryManager = groupQueryManager;
+            this.groupMembershipCommandManager = groupMembershipCommandManager;
         }
 
         public async Task<GroupReadModel> CreateGroup(Guid memoryBookUniverseId, string code, string name, string description)
         {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                throw new ArgumentException(nameof(code));
-            }
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(nameof(name));
-            }
+            Contract.RequiresNotNullOrWhitespace(code, nameof(code));
+            Contract.RequiresNotNullOrWhitespace(name, nameof(name));
 
             try
             {
@@ -63,33 +63,32 @@
 
         public async Task AddMembersToGroup(Guid memoryBookUniverseId, GroupReadModel group, IList<MemberReadModel> members)
         {
-            if (group == null)
-            {
-                throw new ArgumentNullException(nameof(group));
-            }
-            if (members == null || members.Count == 0)
-            {
-                throw new ArgumentNullException(nameof(members));
-            }
+            Contract.RequiresNotNull(group, nameof(group));
+            Contract.RequiresNotNullOrEmpty(members, nameof(members));
 
             var groupMemberships = members.Select(x => new GroupMembershipCreateModel { MemberId = x.Id, GroupId = group.Id })
                 .ToArray();
 
             await this.groupMembershipCommandManager.CreateGroupMembership(memoryBookUniverseId, groupMemberships)
                 .ConfigureAwait(false);
+
+            foreach (var member in members)
+            {
+                group.AddMember(member);
+            }
         }
 
         private async Task<GroupReadModel> CreateGroup(Guid memoryBookUniverseId, GroupCreateModel groupCreateModel)
         {
-            var id = await this.groupCommandManager.CreateGroups(memoryBookUniverseId, groupCreateModel)
+            var result = await this.groupCommandManager.CreateGroups(memoryBookUniverseId, groupCreateModel)
                 .ConfigureAwait(false);
 
-            if (id == null || id.Count == 0)
+            if (!result.Success || !result.Ids.Any())
             {
                 return null;
             }
 
-            var groupReadModel = await this.groupQueryManager.GetGroups(memoryBookUniverseId, id)
+            var groupReadModel = await this.groupQueryManager.GetGroups(memoryBookUniverseId, result.Ids)
                 .ConfigureAwait(false);
 
             return groupReadModel.FirstOrDefault();

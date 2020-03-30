@@ -26,6 +26,16 @@
             return typeBuilder;
         }
 
+        public static EntityTypeBuilder<TEntity> HasUniqueName<TEntity>(
+            this EntityTypeBuilder<TEntity> typeBuilder,
+            int length = 1000)
+            where TEntity : class, IHasNameProperty
+        {
+            typeBuilder.Property<string>(e => e.Name).HasMaxLength(length);
+            typeBuilder.HasIndex(e => e.Name).IsUnique();
+            return typeBuilder;
+        }
+
         public static string GetPropertyName<TEntity, TProperty>(
           this EntityTypeBuilder<TEntity> ignored,
           Expression<Func<TEntity, TProperty>> propertyGetter)

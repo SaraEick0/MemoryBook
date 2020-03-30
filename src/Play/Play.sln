@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageInitializer", "..\St
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "..\DataAccess\DataAccess.csproj", "{C26E7BEA-5248-4423-B876-5E7084193187}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "..\Business\Business.csproj", "{956E8948-58CC-4B1E-9930-FFFFE86AABFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "..\Business\Business.csproj", "{956E8948-58CC-4B1E-9930-FFFFE86AABFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "..\Repository\Repository.csproj", "{81276A9C-A53C-4EF0-8771-60F7E807CF95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "..\Repository\Repository.csproj", "{81276A9C-A53C-4EF0-8771-60F7E807CF95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\Common\Common.csproj", "{1D3736B5-65F6-47BF-8758-787CC85973E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{81276A9C-A53C-4EF0-8771-60F7E807CF95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81276A9C-A53C-4EF0-8771-60F7E807CF95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81276A9C-A53C-4EF0-8771-60F7E807CF95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D3736B5-65F6-47BF-8758-787CC85973E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D3736B5-65F6-47BF-8758-787CC85973E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D3736B5-65F6-47BF-8758-787CC85973E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D3736B5-65F6-47BF-8758-787CC85973E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

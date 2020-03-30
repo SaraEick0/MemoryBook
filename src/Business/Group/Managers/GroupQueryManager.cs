@@ -6,6 +6,8 @@
     using System.Threading.Tasks;
     using DataAccess.Entities;
     using Extensions;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using MemoryBook.DataAccess;
     using Microsoft.EntityFrameworkCore;
     using Models;
@@ -16,7 +18,8 @@
 
         public GroupQueryManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task<IList<GroupReadModel>> GetAllGroups(Guid memoryBookUniverseId)
@@ -24,6 +27,8 @@
             return await dbContext.Set<Group>()
                 .AsNoTracking()
                 .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
+                .Include(x => x.GroupMemberships)
+                .ThenInclude(x => x.Member)
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
         }
@@ -39,6 +44,8 @@
                 .AsNoTracking()
                 .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
                 .Where(x => memberIds.Contains(x.Id))
+                .Include(x => x.GroupMemberships)
+                .ThenInclude(x => x.Member)
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
         }

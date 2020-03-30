@@ -9,6 +9,8 @@
     using Microsoft.EntityFrameworkCore;
     using EntityType;
     using Extensions;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using Models;
 
     public class EntityTypeQueryManager : IEntityTypeQueryManager
@@ -17,7 +19,8 @@
 
         public EntityTypeQueryManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task<IList<EntityTypeReadModel>> GetAllEntityTypes()

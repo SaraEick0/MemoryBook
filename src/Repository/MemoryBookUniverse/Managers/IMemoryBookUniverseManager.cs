@@ -5,6 +5,10 @@
 
     public interface IMemoryBookUniverseManager
     {
-        Task<Guid> GetOrCreateUniverse(string universeName);
+        Task<Guid> CreateUniverse(string universeName);
+
+        Task<Guid> GetUniverse(string universeName);
+
+        Task DeleteUniverse(Guid memoryBookUniverseId);
     }
 }

@@ -5,6 +5,8 @@
     using System.Linq;
     using System.Threading.Tasks;
     using DataAccess.Entities;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using MemoryBook.DataAccess;
     using Microsoft.EntityFrameworkCore;
     using Models;
@@ -15,7 +17,8 @@
 
         public MemberCommandManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task<IList<Guid>> CreateMembers(Guid memoryBookUniverseId, params MemberCreateModel[] models)
@@ -25,7 +28,7 @@
                 return new List<Guid>();
             }
 
-            IEnumerable<Member> entities = models.Select(model => CreateEntity(memoryBookUniverseId, model));
+            IList<Member> entities = models.Select(model => CreateEntity(memoryBookUniverseId, model)).ToList();
 
             this.dbContext.AddRange(entities);
 
@@ -97,7 +100,8 @@
                 FirstName = model.FirstName,
                 MiddleName = model.MiddleName,
                 LastName = model.LastName,
-                CommonName = model.CommonName
+                CommonName = model.CommonName,
+                MemoryBookUniverseId = memoryBookUniverseId
             };
         }
 

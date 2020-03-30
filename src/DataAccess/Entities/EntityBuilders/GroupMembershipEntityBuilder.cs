@@ -18,12 +18,12 @@
                 e.HasOne(x => x.Group)
                     .WithMany(x => x.GroupMemberships)
                     .HasForeignKey(x => x.GroupId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 e.HasOne(x => x.Member)
                     .WithMany(x => x.GroupMemberships)
                     .HasForeignKey(x => x.MemberId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.NoAction);
             });
         }
     }

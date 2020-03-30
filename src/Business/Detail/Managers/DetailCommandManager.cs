@@ -5,6 +5,8 @@
     using System.Linq;
     using System.Threading.Tasks;
     using DataAccess.Entities;
+    using MemoryBook.Common;
+    using MemoryBook.Common.Extensions;
     using MemoryBook.DataAccess;
     using Microsoft.EntityFrameworkCore;
     using Models;
@@ -15,7 +17,8 @@
 
         public DetailCommandManager(MemoryBookDbContext dbContext)
         {
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            Contract.RequiresNotNull(dbContext, nameof(dbContext));
+            this.dbContext = dbContext;
         }
 
         public async Task<IList<Guid>> CreateDetails(Guid memoryBookUniverseId, params DetailCreateModel[] models)

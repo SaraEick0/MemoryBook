@@ -2,7 +2,6 @@
 {
     using DataAccess.Entities;
     using Models;
-    using RelationshipType.Models;
 
     public static class MemoryBookUniverseReadModelExtensions
     {

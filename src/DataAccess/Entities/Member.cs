@@ -30,11 +30,6 @@
         public List<Detail> CreatedDetails { get; set; }
 
         /// <summary>
-        /// Details this member is a member of.
-        /// </summary>
-        public IList<DetailAssociation> DetailAssociations { get; set; }
-
-        /// <summary>
         /// Details this member has permissions to edit or update.
         /// </summary>
         public List<DetailPermission> Permissions { get; set; }

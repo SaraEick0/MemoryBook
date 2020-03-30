@@ -16,8 +16,6 @@
 
         public DateTime? EndTime { get; set; }
 
-        public List<DetailAssociation> DetailAssociations { get; set; }
-
         public List<RelationshipMembership> RelationshipMemberships { get; set; }
     }
 }

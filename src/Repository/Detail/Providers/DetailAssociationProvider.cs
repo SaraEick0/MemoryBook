@@ -1,6 +1,5 @@
 ﻿namespace MemoryBook.Repository.Detail.Providers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -12,8 +11,10 @@
     using Business.EntityType.Models;
     using Business.Member.Models;
     using Business.Relationship.Models;
+    using Common.Extensions;
     using DataAccess.Interfaces;
     using MemoryBook.Business.Group.Models;
+    using MemoryBook.Common;
     using Microsoft.Extensions.Caching.Memory;
 
     public class DetailAssociationProvider : IDetailAssociationProvider
@@ -29,10 +30,15 @@
             IDetailAssociationQueryManager detailAssociationQueryManager,
             IMemoryCache memoryCache)
         {
-            this.entityTypeQueryManager = entityTypeQueryManager ?? throw new ArgumentNullException(nameof(entityTypeQueryManager));
-            this.detailAssociationCommandManager = detailAssociationCommandManager ?? throw new ArgumentNullException(nameof(detailAssociationCommandManager));
-            this.detailAssociationQueryManager = detailAssociationQueryManager ?? throw new ArgumentNullException(nameof(detailAssociationQueryManager));
-            this.memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+            Contract.RequiresNotNull(entityTypeQueryManager, nameof(entityTypeQueryManager));
+            Contract.RequiresNotNull(detailAssociationCommandManager, nameof(detailAssociationCommandManager));
+            Contract.RequiresNotNull(detailAssociationQueryManager, nameof(detailAssociationQueryManager));
+            Contract.RequiresNotNull(memoryCache, nameof(memoryCache));
+
+            this.entityTypeQueryManager = entityTypeQueryManager;
+            this.detailAssociationCommandManager = detailAssociationCommandManager;
+            this.detailAssociationQueryManager = detailAssociationQueryManager;
+            this.memoryCache = memoryCache;
         }
 
         public async Task CreateDetailAssociation(DetailReadModel detail, IList<MemberReadModel> members)

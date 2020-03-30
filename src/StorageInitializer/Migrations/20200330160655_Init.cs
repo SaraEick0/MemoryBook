@@ -157,7 +157,7 @@ namespace MemoryBook.StorageInitializer.Migrations
                         principalSchema: "MemoryBook",
                         principalTable: "Member",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Detail_DetailType_DetailTypeId",
                         column: x => x.DetailTypeId,
@@ -192,14 +192,13 @@ namespace MemoryBook.StorageInitializer.Migrations
                         principalSchema: "MemoryBook",
                         principalTable: "Group",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_GroupMembership_Member_MemberId",
                         column: x => x.MemberId,
                         principalSchema: "MemoryBook",
                         principalTable: "Member",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -230,14 +229,13 @@ namespace MemoryBook.StorageInitializer.Migrations
                         principalSchema: "MemoryBook",
                         principalTable: "RelationshipType",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_RelationshipMembership_Relationship_RelationshipId",
                         column: x => x.RelationshipId,
                         principalSchema: "MemoryBook",
                         principalTable: "Relationship",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -262,7 +260,7 @@ namespace MemoryBook.StorageInitializer.Migrations
                         principalSchema: "MemoryBook",
                         principalTable: "Detail",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DetailAssociation_EntityType_EntityTypeId",
                         column: x => x.EntityTypeId,
@@ -313,14 +311,13 @@ namespace MemoryBook.StorageInitializer.Migrations
                         principalSchema: "MemoryBook",
                         principalTable: "Detail",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DetailPermission_Member_MemberId",
                         column: x => x.MemberId,
                         principalSchema: "MemoryBook",
                         principalTable: "Member",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -411,6 +408,13 @@ namespace MemoryBook.StorageInitializer.Migrations
                 column: "MemoryBookUniverseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Group_Name",
+                schema: "MemoryBook",
+                table: "Group",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GroupMembership_GroupId",
                 schema: "MemoryBook",
                 table: "GroupMembership",
@@ -423,10 +427,33 @@ namespace MemoryBook.StorageInitializer.Migrations
                 column: "MemberId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Member_CommonName",
+                schema: "MemoryBook",
+                table: "Member",
+                column: "CommonName",
+                unique: true,
+                filter: "[CommonName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Member_MemoryBookUniverseId",
                 schema: "MemoryBook",
                 table: "Member",
                 column: "MemoryBookUniverseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Member_FirstName_MiddleName_LastName",
+                schema: "MemoryBook",
+                table: "Member",
+                columns: new[] { "FirstName", "MiddleName", "LastName" },
+                unique: true,
+                filter: "[MiddleName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MemoryBookUniverses_Name",
+                schema: "MemoryBook",
+                table: "MemoryBookUniverses",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Relationship_MemoryBookUniverseId",
