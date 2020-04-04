@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "src\Repositor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageInitializer", "src\StorageInitializer\StorageInitializer.csproj", "{C1FA0470-ACC8-41EA-AB83-7A8AAACD26D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop", "src\MemoryBookDesktop\Desktop.csproj", "{123C3FF9-9778-49C2-AFC4-FE048EC90442}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop", "src\MemoryBookDesktop\Desktop.csproj", "{123C3FF9-9778-49C2-AFC4-FE048EC90442}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "src\Service\Service.csproj", "{72919D83-E7C8-4904-ABEC-C8C095DA6AD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{123C3FF9-9778-49C2-AFC4-FE048EC90442}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{123C3FF9-9778-49C2-AFC4-FE048EC90442}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{123C3FF9-9778-49C2-AFC4-FE048EC90442}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72919D83-E7C8-4904-ABEC-C8C095DA6AD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72919D83-E7C8-4904-ABEC-C8C095DA6AD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72919D83-E7C8-4904-ABEC-C8C095DA6AD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72919D83-E7C8-4904-ABEC-C8C095DA6AD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,6 +64,7 @@ Global
 		{B6791DCB-2902-409E-8ED4-87CB2CC27C70} = {11FD1588-23C2-42FA-B37A-EB53C0AA18AD}
 		{C1FA0470-ACC8-41EA-AB83-7A8AAACD26D3} = {11FD1588-23C2-42FA-B37A-EB53C0AA18AD}
 		{123C3FF9-9778-49C2-AFC4-FE048EC90442} = {11FD1588-23C2-42FA-B37A-EB53C0AA18AD}
+		{72919D83-E7C8-4904-ABEC-C8C095DA6AD0} = {11FD1588-23C2-42FA-B37A-EB53C0AA18AD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3067FBC6-FA94-4F1F-9E98-E25053E39025}

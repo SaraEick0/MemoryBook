@@ -1,6 +1,7 @@
 ﻿namespace MemoryBook.Repository.MemoryBookUniverse.Managers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Business.MemoryBookUniverse.Managers;
@@ -22,7 +23,20 @@
             this.memoryBookUniverseCommandManager = memoryBookUniverseCommandManager;
         }
 
-        public async Task<Guid> GetUniverse(string universeName)
+        public async Task<MemoryBookUniverseReadModel> GetUniverse(Guid universeId)
+        {
+            IList<MemoryBookUniverseReadModel> universes = await this.memoryBookUniverseQueryManager.GetMemoryBookUniverses(universeId)
+                .ConfigureAwait(false);
+
+            if (universes.Any())
+            {
+                return universes.First();
+            }
+
+            return null;
+        }
+
+        public async Task<MemoryBookUniverseReadModel> GetUniverse(string universeName)
         {
             Contract.RequiresNotNullOrWhitespace(universeName, nameof(universeName));
 
@@ -31,10 +45,10 @@
 
             if (universes.Any())
             {
-                return universes.First().Id;
+                return universes.First();
             }
 
-            return Guid.Empty;
+            return null;
         }
 
         public async Task<Guid> CreateUniverse(string universeName)

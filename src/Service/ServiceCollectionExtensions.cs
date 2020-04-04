@@ -1,4 +1,4 @@
-﻿namespace MemoryBook.Desktop
+﻿namespace MemoryBook.Service
 {
     using Business.Detail.Managers;
     using Business.DetailAssociation.Managers;
@@ -11,18 +11,18 @@
     using Business.Relationship.Managers;
     using Business.RelationshipMembership.Managers;
     using Business.RelationshipType.Managers;
+    using MemoryBook.Repository.MemoryBookUniverse.Managers;
     using Microsoft.Extensions.DependencyInjection;
     using Repository.Detail.Managers;
     using Repository.Detail.Providers;
     using Repository.Group.Managers;
     using Repository.Member.Managers;
     using Repository.Member.Providers;
-    using Repository.MemoryBookUniverse.Managers;
     using Repository.SeedData;
 
     public static class ServiceCollectionExtensions
     {
-        public static void ConfigureServices(this ServiceCollection services)
+        public static void AddManagers(this IServiceCollection services)
         {
             services.AddTransient<IGroupManager, GroupManager>();
             services.AddTransient<IRelationshipDetailManager, RelationshipDetailManager>();
@@ -61,9 +61,7 @@
                 .AddTransient<IMemoryBookUniverseCommandManager, MemoryBookUniverseCommandManager>()
                 .AddTransient<IMemoryBookUniverseQueryManager, MemoryBookUniverseQueryManager>()
                 .AddTransient<IGroupViewCoordinator, GroupViewCoordinator>();
-
-            services.AddSingleton<MemoryBook>();
-
+            
             services.AddMemoryCache();
             services.AddLogging();
         }

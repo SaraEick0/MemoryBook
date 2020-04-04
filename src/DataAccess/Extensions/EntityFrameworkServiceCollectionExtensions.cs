@@ -1,4 +1,4 @@
-﻿namespace MemoryBook.Desktop
+﻿namespace MemoryBook.DataAccess.Extensions
 {
     using DataAccess;
     using Microsoft.EntityFrameworkCore;

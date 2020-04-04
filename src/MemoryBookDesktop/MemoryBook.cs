@@ -182,14 +182,14 @@
 
             await this.LoadSeedData().ConfigureAwait(false);
 
-            var universeId = await this.memoryBookUniverseManager.GetUniverse(UniverseName).ConfigureAwait(false);
+            var universe = await this.memoryBookUniverseManager.GetUniverse(UniverseName).ConfigureAwait(false);
 
-            if (universeId != Guid.Empty)
+            if (universe != null)
             {
-                await this.DeleteTestData(universeId);
+                await this.DeleteTestData(universe.Id);
             }
 
-            universeId = await this.memoryBookUniverseManager.CreateUniverse(UniverseName).ConfigureAwait(false);
+            var universeId = await this.memoryBookUniverseManager.CreateUniverse(UniverseName).ConfigureAwait(false);
 
             // Load some canned test mesh data via code
             GroupReadModel group = await this.LoadData(universeId).ConfigureAwait(false);

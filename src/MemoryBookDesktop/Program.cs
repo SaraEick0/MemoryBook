@@ -3,6 +3,7 @@ namespace MemoryBook.Desktop
     using System;
     using System.Configuration;
     using System.Windows.Forms;
+    using DataAccess.Extensions;
     using Microsoft.Extensions.DependencyInjection;
 
     static class Program

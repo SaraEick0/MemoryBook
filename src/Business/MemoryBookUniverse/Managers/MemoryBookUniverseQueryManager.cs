@@ -1,5 +1,6 @@
 ﻿namespace MemoryBook.Business.MemoryBookUniverse.Managers
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -24,6 +25,20 @@
         {
             return await dbContext.Set<MemoryBookUniverse>()
                 .AsNoTracking()
+                .Select(x => x.ToReadModel())
+                .ToListAsync();
+        }
+
+        public async Task<IList<MemoryBookUniverseReadModel>> GetMemoryBookUniverses(params Guid[] universeIds)
+        {
+            if (universeIds == null || universeIds.Length == 0)
+            {
+                return new List<MemoryBookUniverseReadModel>();
+            }
+
+            return await dbContext.Set<MemoryBookUniverse>()
+                .AsNoTracking()
+                .Where(x => universeIds.Contains(x.Id))
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
         }
