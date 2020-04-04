@@ -11,22 +11,26 @@
     using Business.Member.Models;
     using Common.Extensions;
     using Extensions;
+    using Microsoft.Extensions.Logging;
 
     public class GroupManager : IGroupManager
     {
         private readonly IGroupCommandManager groupCommandManager;
         private readonly IGroupQueryManager groupQueryManager;
         private readonly IGroupMembershipCommandManager groupMembershipCommandManager;
+        private readonly ILogger<GroupManager> logger;
 
-        public GroupManager(IGroupCommandManager groupCommandManager, IGroupQueryManager groupQueryManager, IGroupMembershipCommandManager groupMembershipCommandManager)
+        public GroupManager(IGroupCommandManager groupCommandManager, IGroupQueryManager groupQueryManager, IGroupMembershipCommandManager groupMembershipCommandManager, ILogger<GroupManager> logger)
         {
             Contract.RequiresNotNull(groupCommandManager, nameof(groupCommandManager));
             Contract.RequiresNotNull(groupQueryManager, nameof(groupQueryManager));
             Contract.RequiresNotNull(groupMembershipCommandManager, nameof(groupMembershipCommandManager));
+            Contract.RequiresNotNull(logger, nameof(logger));
 
             this.groupCommandManager = groupCommandManager;
             this.groupQueryManager = groupQueryManager;
             this.groupMembershipCommandManager = groupMembershipCommandManager;
+            this.logger = logger;
         }
 
         public async Task<GroupReadModel> CreateGroup(Guid memoryBookUniverseId, string code, string name, string description)
@@ -56,6 +60,7 @@
             }
             catch (Exception ex)
             {
+                this.logger.LogError(ex, $"An exception occurred in {nameof(this.CreateGroup)}");
                 return null;
             }
         }

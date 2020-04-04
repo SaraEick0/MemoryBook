@@ -1,14 +1,14 @@
-﻿namespace Play
+﻿namespace MemoryBook.Desktop
 {
-    partial class Form1
+    partial class MemoryBook
     {
         /// <summary>
-        /// Required designer variable.
+        ///  Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        /// Clean up any resources being used.
+        ///  Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
@@ -64,8 +64,8 @@
             this.PerformLayout();
 
         }
-
         #endregion
+
 
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label TestDataLabel;

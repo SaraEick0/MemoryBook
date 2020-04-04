@@ -1,6 +1,6 @@
-﻿namespace Play
+﻿namespace MemoryBook.Desktop
 {
-    using MemoryBook.DataAccess;
+    using DataAccess;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Diagnostics;
     using Microsoft.EntityFrameworkCore.Infrastructure;

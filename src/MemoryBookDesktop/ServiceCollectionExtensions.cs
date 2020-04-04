@@ -1,24 +1,24 @@
-﻿namespace Play
+﻿namespace MemoryBook.Desktop
 {
-    using MemoryBook.Business.Detail.Managers;
-    using MemoryBook.Business.DetailAssociation.Managers;
-    using MemoryBook.Business.DetailType.Managers;
-    using MemoryBook.Business.EntityType.Managers;
-    using MemoryBook.Business.Group.Managers;
-    using MemoryBook.Business.GroupMembership.Managers;
-    using MemoryBook.Business.Member.Managers;
-    using MemoryBook.Business.MemoryBookUniverse.Managers;
-    using MemoryBook.Business.Relationship.Managers;
-    using MemoryBook.Business.RelationshipMembership.Managers;
-    using MemoryBook.Business.RelationshipType.Managers;
-    using MemoryBook.Repository.Detail.Managers;
-    using MemoryBook.Repository.Detail.Providers;
-    using MemoryBook.Repository.Group.Managers;
-    using MemoryBook.Repository.Member.Managers;
-    using MemoryBook.Repository.Member.Providers;
-    using MemoryBook.Repository.MemoryBookUniverse.Managers;
-    using MemoryBook.Repository.SeedData;
+    using Business.Detail.Managers;
+    using Business.DetailAssociation.Managers;
+    using Business.DetailType.Managers;
+    using Business.EntityType.Managers;
+    using Business.Group.Managers;
+    using Business.GroupMembership.Managers;
+    using Business.Member.Managers;
+    using Business.MemoryBookUniverse.Managers;
+    using Business.Relationship.Managers;
+    using Business.RelationshipMembership.Managers;
+    using Business.RelationshipType.Managers;
     using Microsoft.Extensions.DependencyInjection;
+    using Repository.Detail.Managers;
+    using Repository.Detail.Providers;
+    using Repository.Group.Managers;
+    using Repository.Member.Managers;
+    using Repository.Member.Providers;
+    using Repository.MemoryBookUniverse.Managers;
+    using Repository.SeedData;
 
     public static class ServiceCollectionExtensions
     {
@@ -61,9 +61,10 @@
                 .AddTransient<IMemoryBookUniverseCommandManager, MemoryBookUniverseCommandManager>()
                 .AddTransient<IMemoryBookUniverseQueryManager, MemoryBookUniverseQueryManager>();
             
-            services.AddSingleton<Form1>();
+            services.AddSingleton<MemoryBook>();
 
             services.AddMemoryCache();
+            services.AddLogging();
         }
     }
 }

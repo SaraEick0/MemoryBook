@@ -1,4 +1,4 @@
-﻿namespace Play
+namespace MemoryBook.Desktop
 {
     using System;
     using System.Configuration;
@@ -7,10 +7,8 @@
 
     static class Program
     {
-        public static IServiceProvider ServiceProvider { get; set; }
-
         /// <summary>
-        /// The main entry point for the application.
+        ///  The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
@@ -25,9 +23,9 @@
             services.ConfigureServices();
             services.AddDatabaseContexts(connectionString);
 
-            ServiceProvider = services.BuildServiceProvider();
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-            Application.Run((Form1)ServiceProvider.GetService(typeof(Form1)));
+            Application.Run((MemoryBook)serviceProvider.GetService(typeof(MemoryBook)));
         }
     }
 }

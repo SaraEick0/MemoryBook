@@ -1,9 +1,5 @@
-﻿//***************************************************************************************************************
-
-//***************************************************************************************************************
-namespace Play
+﻿namespace MemoryBook.Desktop
 {
-    using MemoryBook.Business.Member.Models;
     using NodaTime;
     using System;
     using System.Linq;
@@ -11,21 +7,22 @@ namespace Play
     using System.Windows.Forms;
     using System.Collections.Generic;
     using System.Text;
-    using MemoryBook.Business.Detail.Models;
-    using MemoryBook.Business.DetailType;
-    using MemoryBook.Business.Group.Models;
-    using MemoryBook.Business.Relationship.Models;
-    using MemoryBook.Business.RelationshipType;
-    using MemoryBook.Common.Extensions;
-    using MemoryBook.Repository.Detail.Managers;
-    using MemoryBook.Repository.Group.Extensions;
-    using MemoryBook.Repository.Group.Managers;
-    using MemoryBook.Repository.Member.Extensions;
-    using MemoryBook.Repository.Member.Managers;
-    using MemoryBook.Repository.MemoryBookUniverse.Managers;
-    using MemoryBook.Repository.SeedData;
+    using Business.Detail.Models;
+    using Business.DetailType;
+    using Business.Group.Models;
+    using Business.Member.Models;
+    using Business.Relationship.Models;
+    using Business.RelationshipType;
+    using Common.Extensions;
+    using Repository.Detail.Managers;
+    using Repository.Group.Extensions;
+    using Repository.Group.Managers;
+    using Repository.Member.Extensions;
+    using Repository.Member.Managers;
+    using Repository.MemoryBookUniverse.Managers;
+    using Repository.SeedData;
 
-    public partial class Form1 : Form
+    public partial class MemoryBook : Form
     {
         private readonly IMemoryBookUniverseManager memoryBookUniverseManager;
         private readonly ISeedDataManager seedDataManager;
@@ -34,7 +31,7 @@ namespace Play
         private readonly IMemberDetailManager memberDetailManager;
         private readonly IRelationshipDetailManager relationshipDetailManager;
 
-        public Form1(
+        public MemoryBook(
             IMemoryBookUniverseManager memoryBookUniverseManager,
             ISeedDataManager seedDataManager,
             IMemberManager memberManager,
@@ -42,8 +39,6 @@ namespace Play
             IMemberDetailManager memberDetailManager,
             IRelationshipDetailManager relationshipDetailManager)
         {
-            InitializeComponent();
-
             Contract.RequiresNotNull(memoryBookUniverseManager, nameof(memoryBookUniverseManager));
             Contract.RequiresNotNull(seedDataManager, nameof(seedDataManager));
             Contract.RequiresNotNull(memberManager, nameof(memberManager));
@@ -57,6 +52,8 @@ namespace Play
             this.groupManager = groupManager;
             this.memberDetailManager = memberDetailManager;
             this.relationshipDetailManager = relationshipDetailManager;
+
+            this.InitializeComponent();
         }
 
         public delegate Task<string> InvokeDelegate(Label label);

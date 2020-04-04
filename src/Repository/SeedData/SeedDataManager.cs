@@ -8,6 +8,7 @@
     using Business.RelationshipType.Managers;
     using Business.SeedData;
     using Common.Extensions;
+    using Microsoft.Extensions.Logging;
 
     public class SeedDataManager : ISeedDataManager
     {
@@ -17,6 +18,7 @@
         private readonly IRelationshipTypeCommandManager relationshipTypeCommandManager;
         private readonly IDetailTypeCommandManager detailTypeCommandManager;
         private readonly IEntityTypeCommandManager entityTypeCommandManager;
+        private readonly ILogger<SeedDataManager> logger;
 
         public SeedDataManager(
             IRelationshipTypeQueryManager relationshipTypeQueryManager,
@@ -24,7 +26,8 @@
             IEntityTypeQueryManager entityTypeQueryManager,
             IRelationshipTypeCommandManager relationshipTypeCommandManager,
             IDetailTypeCommandManager detailTypeCommandManager,
-            IEntityTypeCommandManager entityTypeCommandManager)
+            IEntityTypeCommandManager entityTypeCommandManager,
+            ILogger<SeedDataManager> logger)
         {
             Contract.RequiresNotNull(relationshipTypeQueryManager, nameof(relationshipTypeQueryManager));
             Contract.RequiresNotNull(detailTypeQueryManager, nameof(detailTypeQueryManager));
@@ -32,6 +35,7 @@
             Contract.RequiresNotNull(relationshipTypeCommandManager, nameof(relationshipTypeCommandManager));
             Contract.RequiresNotNull(detailTypeCommandManager, nameof(detailTypeCommandManager));
             Contract.RequiresNotNull(entityTypeCommandManager, nameof(entityTypeCommandManager));
+            Contract.RequiresNotNull(logger, nameof(logger));
 
             this.relationshipTypeQueryManager = relationshipTypeQueryManager;
             this.detailTypeQueryManager = detailTypeQueryManager;
@@ -39,6 +43,7 @@
             this.relationshipTypeCommandManager = relationshipTypeCommandManager;
             this.detailTypeCommandManager = detailTypeCommandManager;
             this.entityTypeCommandManager = entityTypeCommandManager;
+            this.logger = logger;
         }
 
         public async Task LoadSeedData()
@@ -51,7 +56,7 @@
             }
             catch (Exception ex)
             {
-
+                this.logger.LogError(ex, $"An exception occurred in {nameof(SeedDataManager)}");
             }
         }
 
