@@ -1,24 +1,24 @@
 ﻿namespace MemoryBook.Service
 {
     using Business.Detail.Managers;
-    using Business.DetailAssociation.Managers;
-    using Business.DetailType.Managers;
-    using Business.EntityType.Managers;
     using Business.Group.Managers;
-    using Business.GroupMembership.Managers;
     using Business.Member.Managers;
     using Business.MemoryBookUniverse.Managers;
-    using Business.Relationship.Managers;
-    using Business.RelationshipMembership.Managers;
-    using Business.RelationshipType.Managers;
-    using MemoryBook.Repository.MemoryBookUniverse.Managers;
+    using MemoryBook.Business.Detail.Providers;
+    using MemoryBook.Business.Member.Providers;
+    using MemoryBook.Business.SeedData;
     using Microsoft.Extensions.DependencyInjection;
     using Repository.Detail.Managers;
-    using Repository.Detail.Providers;
+    using Repository.DetailAssociation.Managers;
+    using Repository.DetailType.Managers;
+    using Repository.EntityType.Managers;
     using Repository.Group.Managers;
+    using Repository.GroupMembership.Managers;
     using Repository.Member.Managers;
-    using Repository.Member.Providers;
-    using Repository.SeedData;
+    using Repository.MemoryBookUniverse.Managers;
+    using Repository.Relationship.Managers;
+    using Repository.RelationshipMembership.Managers;
+    using Repository.RelationshipType.Managers;
 
     public static class ServiceCollectionExtensions
     {

@@ -26,7 +26,7 @@ namespace MemoryBook.Desktop
 
             ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-            Application.Run((MemoryBook)serviceProvider.GetService(typeof(MemoryBook)));
+            Application.Run((MemoryBookForm)serviceProvider.GetService(typeof(MemoryBookForm)));
         }
     }
 }

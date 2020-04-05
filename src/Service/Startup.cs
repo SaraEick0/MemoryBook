@@ -3,12 +3,10 @@
     using System;
     using Common.Extensions;
     using DataAccess.Extensions;
-    using MemoryBook.DataAccess;
     using MemoryBook.Service.Configuration;
     using MemoryBook.Service.SwaggerGeneration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Options;

@@ -1,42 +1,22 @@
 ﻿namespace MemoryBook.Repository.Group.Extensions
 {
-    using MemoryBook.Business.Group.Models;
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using Business.Detail.Models;
-    using Business.Member.Models;
+    using DataAccess.Entities;
+    using Member.Extensions;
+    using Models;
 
     public static class GroupReadModelExtensions
     {
-        public static void AddMember(this GroupReadModel group, MemberReadModel member)
+        public static GroupReadModel ToReadModel(this Group group)
         {
-            if (group.Members == null)
+            return new GroupReadModel
             {
-                group.Members = new List<MemberReadModel>();
-            }
-
-            group.Members.Add(member);
-        }
-
-        public static void AddDetail(this GroupReadModel group, DetailReadModel detail)
-        {
-            if (group.Details == null)
-            {
-                group.Details = new List<DetailReadModel>();
-            }
-
-            group.Details.Add(detail);
-        }
-
-        public static MemberReadModel GetMember(this GroupReadModel group, string commonName)
-        {
-            return group.Members.FirstOrDefault(x => x.CommonName.Equals(commonName, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public static MemberReadModel GetMember(this GroupReadModel group, Guid memberId)
-        {
-            return group.Members.FirstOrDefault(x => x.Id == memberId);
+                Id =  group.Id,
+                Name = group.Name,
+                Code = group.Code,
+                Description = group.Description,
+                Members = group.GroupMemberships?.Select(x => x.Member.ToShallowReadModel()).ToList()
+            };
         }
     }
 }

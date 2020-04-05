@@ -6,7 +6,6 @@
     using Common.Extensions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OpenApi.Models;
-    using Swashbuckle.AspNetCore.Swagger;
     using Swashbuckle.AspNetCore.SwaggerGen;
 
     public static class SwaggerGenerationServiceCollectionExtensions

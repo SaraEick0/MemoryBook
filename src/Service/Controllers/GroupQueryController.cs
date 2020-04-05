@@ -4,10 +4,10 @@
     using System.Collections.Generic;
     using System.Net.Mime;
     using System.Threading.Tasks;
-    using Business.Group.Models;
     using Common.Extensions;
+    using MemoryBook.Business.Group.Managers;
     using Microsoft.AspNetCore.Mvc;
-    using Repository.Group.Managers;
+    using Repository.Group.Models;
     using Swashbuckle.AspNetCore.Annotations;
 
     [Route("api/[controller]")]

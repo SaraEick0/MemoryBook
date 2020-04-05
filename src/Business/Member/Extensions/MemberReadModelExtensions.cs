@@ -1,36 +1,59 @@
 ﻿namespace MemoryBook.Business.Member.Extensions
 {
+    using System.Collections.Generic;
     using System.Linq;
-    using DataAccess.Entities;
-    using Detail.Extensions;
-    using Group.Extensions;
-    using Models;
-    using Relationship.Extensions;
+    using Repository.Detail.Models;
+    using Repository.DetailType;
+    using Repository.Member.Models;
+    using Repository.Relationship.Models;
+    using Repository.RelationshipType;
 
     public static class MemberReadModelExtensions
     {
-        public static MemberReadModel ToReadModel(this Member entity)
+        public static DetailReadModel GetBirthday(this MemberReadModel member)
         {
-            var model = entity.ToShallowReadModel();
-
-            model.Details = entity.CreatedDetails?.Select(x => x.ToShallowReadModel()).ToList();
-            model.Groups = entity.GroupMemberships?.Select(x => x.Group.ToReadModel()).ToList();
-            model.Relationships = entity.RelationshipMemberships?.Select(x => x.Relationship.ToShallowReadModel()).ToList();
-
-            return model;
+            return member?.GetDetail(DetailTypeEnum.LifeSpan);
         }
 
-        public static MemberReadModel ToShallowReadModel(this Member entity)
+        /// <summary>
+        /// After the detail has been saved to the database, this will just add it to the member model. I don't think we would care about doing this outside of test data.
+        /// </summary>
+        /// <param name="member"></param>
+        /// <param name="detail"></param>
+        public static void AddDetail(this MemberReadModel member, DetailReadModel detail)
         {
-            return new MemberReadModel
+            if (member.Details == null)
             {
-                Id = entity.Id,
-                CommonName = entity.CommonName,
-                FirstName = entity.FirstName,
-                MiddleName = entity.MiddleName,
-                LastName = entity.LastName,
-                MemoryBookUniverseId = entity.MemoryBookUniverseId
-            };
+                member.Details = new List<DetailReadModel>();
+            }
+
+            member.Details.Add(detail);
+        }
+
+        /// <summary>
+        /// After the relationship has been saved to the database, this will just add it to the member model. I don't think we would care about doing this outside of test data.
+        /// </summary>
+        /// <param name="member"></param>
+        /// <param name="relationship"></param>
+        public static void AddRelationship(this MemberReadModel member, RelationshipReadModel relationship)
+        {
+            if (member.Relationships == null)
+            {
+                member.Relationships = new List<RelationshipReadModel>();
+            }
+
+            member.Relationships.Add(relationship);
+        }
+
+        public static DetailReadModel GetDetail(this MemberReadModel member, DetailTypeEnum detailType)
+        {
+            return member?.Details?.FirstOrDefault(x => x.DetailType.Code == detailType.ToString());
+        }
+
+        public static RelationshipReadModel GetRelationship(this MemberReadModel member, RelationshipTypeEnum otherMemberRelationshipType)
+        {
+            return member?.Relationships?.FirstOrDefault(x =>
+                (x.Memberships.Any(n => n.MemberRelationshipType.Code == otherMemberRelationshipType.ToString())));
         }
     }
 }

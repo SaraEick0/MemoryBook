@@ -4,8 +4,8 @@
     using System.Net.Mime;
     using System.Threading.Tasks;
     using Common.Extensions;
+    using MemoryBook.Business.MemoryBookUniverse.Managers;
     using Microsoft.AspNetCore.Mvc;
-    using Repository.MemoryBookUniverse.Managers;
     using Swashbuckle.AspNetCore.Annotations;
 
     [Route("api/[controller]")]
