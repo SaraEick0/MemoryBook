@@ -1,9 +1,12 @@
 ﻿namespace MemoryBook.Service
 {
+    using Business.DataCoordinators.Managers;
     using Business.Detail.Managers;
-    using Business.Group.Managers;
+    using Business.Group.Providers;
     using Business.Member.Managers;
     using Business.MemoryBookUniverse.Managers;
+    using Business.Relationship.Managers;
+    using Business.Relationship.Providers;
     using MemoryBook.Business.Detail.Providers;
     using MemoryBook.Business.Member.Providers;
     using MemoryBook.Business.SeedData;
@@ -24,7 +27,7 @@
     {
         public static void AddManagers(this IServiceCollection services)
         {
-            services.AddTransient<IGroupManager, GroupManager>();
+            services.AddTransient<IGroupProvider, GroupProvider>();
             services.AddTransient<IRelationshipDetailManager, RelationshipDetailManager>();
             services.AddTransient<IMemberDetailManager, MemberDetailManager>();
             services.AddTransient<IMemberManager, MemberManager>();
@@ -35,6 +38,8 @@
             services.AddTransient<IMemberProvider, MemberProvider>();
             services.AddTransient<IRelationshipTypeProvider, RelationshipTypeProvider>();
             services.AddTransient<IRelationshipProvider, RelationshipProvider>();
+            services.AddTransient<IRelationshipManager, RelationshipManager>();
+            services.AddTransient<IRelationshipMemberProvider, RelationshipMemberProvider>();
 
             services.AddTransient<ISeedDataManager, SeedDataManager>();
 
@@ -60,7 +65,7 @@
                 .AddTransient<IEntityTypeQueryManager, EntityTypeQueryManager>()
                 .AddTransient<IMemoryBookUniverseCommandManager, MemoryBookUniverseCommandManager>()
                 .AddTransient<IMemoryBookUniverseQueryManager, MemoryBookUniverseQueryManager>()
-                .AddTransient<IGroupViewCoordinator, GroupViewCoordinator>();
+                .AddTransient<IViewCoordinator, ViewCoordinator>();
             
             services.AddMemoryCache();
             services.AddLogging();

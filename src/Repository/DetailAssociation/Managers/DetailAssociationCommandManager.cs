@@ -12,12 +12,12 @@
 
     public class DetailAssociationCommandManager : IDetailAssociationCommandManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public DetailAssociationCommandManager(MemoryBookDbContext dbContext)
+        public DetailAssociationCommandManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<Guid>> CreateDetailAssociation(params DetailAssociationCreateModel[] models)
@@ -29,9 +29,9 @@
 
             IList<DetailAssociation> entities = models.Select(CreateEntity).ToList();
 
-            this.dbContext.AddRange(entities);
+            this.databaseContext.AddRange(entities);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
 
             return entities.Select(x => x.Id).ToList();
         }
@@ -43,15 +43,15 @@
                 return;
             }
 
-            var detailAssociations = await dbContext.Set<DetailAssociation>()
+            var detailAssociations = await databaseContext.Set<DetailAssociation>()
                 .Where(x => detailAssociationIds.Contains(x.Id))
                 .AsNoTracking()
                 .ToListAsync()
                 .ConfigureAwait(false);
 
-            this.dbContext.RemoveRange(detailAssociations);
+            this.databaseContext.RemoveRange(detailAssociations);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static DetailAssociation CreateEntity(DetailAssociationCreateModel model)

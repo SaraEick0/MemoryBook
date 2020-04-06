@@ -1,8 +1,11 @@
 ﻿namespace MemoryBook.Desktop
 {
+    using Business.DataCoordinators.Managers;
+    using Business.Group.Providers;
+    using Business.Relationship.Managers;
+    using Business.Relationship.Providers;
     using MemoryBook.Business.Detail.Managers;
     using MemoryBook.Business.Detail.Providers;
-    using MemoryBook.Business.Group.Managers;
     using MemoryBook.Business.Member.Managers;
     using MemoryBook.Business.Member.Providers;
     using MemoryBook.Business.MemoryBookUniverse.Managers;
@@ -24,17 +27,19 @@
     {
         public static void ConfigureServices(this ServiceCollection services)
         {
-            services.AddTransient<IGroupManager, GroupManager>();
+            services.AddTransient<IGroupProvider, GroupProvider>();
             services.AddTransient<IRelationshipDetailManager, RelationshipDetailManager>();
             services.AddTransient<IMemberDetailManager, MemberDetailManager>();
-            services.AddTransient<IMemberManager, MemberManager>();
+            services.AddTransient<IRelationshipManager, RelationshipManager>();
+            services.AddTransient<Business.Member.Managers.IMemberManager, MemberManager>();
             services.AddTransient<IMemoryBookUniverseManager, MemoryBookUniverseManager>();
             
             services.AddTransient<IDetailAssociationProvider, DetailAssociationProvider>();
             services.AddTransient<IDetailProvider, DetailProvider>();
-            services.AddTransient<IMemberProvider, MemberProvider>();
+            services.AddTransient<Business.Member.Providers.IMemberProvider, MemberProvider>();
             services.AddTransient<IRelationshipTypeProvider, RelationshipTypeProvider>();
             services.AddTransient<IRelationshipProvider, RelationshipProvider>();
+            services.AddTransient<IRelationshipMemberProvider, RelationshipMemberProvider>();
 
             services.AddTransient<ISeedDataManager, SeedDataManager>();
 
@@ -60,7 +65,7 @@
                 .AddTransient<IEntityTypeQueryManager, EntityTypeQueryManager>()
                 .AddTransient<IMemoryBookUniverseCommandManager, MemoryBookUniverseCommandManager>()
                 .AddTransient<IMemoryBookUniverseQueryManager, MemoryBookUniverseQueryManager>()
-                .AddTransient<IGroupViewCoordinator, GroupViewCoordinator>();
+                .AddTransient<IViewCoordinator, ViewCoordinator>();
 
             services.AddSingleton<MemoryBookForm>();
 

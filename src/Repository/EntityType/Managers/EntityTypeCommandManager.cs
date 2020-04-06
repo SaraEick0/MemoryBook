@@ -12,12 +12,12 @@
 
     public class EntityTypeCommandManager : IEntityTypeCommandManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public EntityTypeCommandManager(MemoryBookDbContext dbContext)
+        public EntityTypeCommandManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task CreateEntityType(params EntityTypeCreateModel[] models)
@@ -29,9 +29,9 @@
 
             List<EntityType> entities = models.Select(CreateEntity).ToList();
 
-            this.dbContext.AddRange(entities);
+            this.databaseContext.AddRange(entities);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task UpdateEntityType(params EntityTypeUpdateModel[] models)
@@ -41,7 +41,7 @@
                 return;
             }
 
-            Dictionary<Guid, EntityType> groupDictionary = dbContext.Set<EntityType>()
+            Dictionary<Guid, EntityType> groupDictionary = databaseContext.Set<EntityType>()
                 .AsNoTracking()
                 .ToDictionary(x => x.Id);
 
@@ -56,9 +56,9 @@
                 entitiesToUpdate.Add(UpdateEntity(entity, model));
             }
 
-            this.dbContext.AddRange(entitiesToUpdate);
+            this.databaseContext.AddRange(entitiesToUpdate);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteEntityType(params Guid[] groupIds)
@@ -68,7 +68,7 @@
                 return;
             }
 
-            Dictionary<Guid, EntityType> groupDictionary = dbContext.Set<EntityType>()
+            Dictionary<Guid, EntityType> groupDictionary = databaseContext.Set<EntityType>()
                 .AsNoTracking()
                 .ToDictionary(x => x.Id);
 
@@ -83,9 +83,9 @@
                 entitiesToDelete.Add(entity);
             }
 
-            this.dbContext.RemoveRange(entitiesToDelete);
+            this.databaseContext.RemoveRange(entitiesToDelete);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static EntityType CreateEntity(EntityTypeCreateModel model)

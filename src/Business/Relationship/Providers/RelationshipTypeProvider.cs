@@ -1,4 +1,4 @@
-﻿namespace MemoryBook.Business.Member.Providers
+﻿namespace MemoryBook.Business.Relationship.Providers
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -21,6 +21,11 @@
 
             this.relationshipTypeQueryManager = relationshipTypeQueryManager;
             this.memoryCache = memoryCache;
+        }
+
+        public async Task<IList<RelationshipTypeReadModel>> GetAllRelationshipTypes()
+        {
+            return await this.GetRelationshipTypes().ConfigureAwait(false);
         }
 
         public async Task<RelationshipTypeReadModel> GetRelationshipType(RelationshipTypeEnum relationshipType)

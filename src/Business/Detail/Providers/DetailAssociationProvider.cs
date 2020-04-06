@@ -1,5 +1,6 @@
 ﻿namespace MemoryBook.Business.Detail.Providers
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -40,32 +41,32 @@
             this.memoryCache = memoryCache;
         }
 
-        public async Task CreateDetailAssociation(DetailReadModel detail, IList<MemberReadModel> members)
+        public async Task CreateMemberDetailAssociation(DetailReadModel detail, IList<Guid> memberIds)
         {
-            await this.CreateDetailAssociation(detail, EntityTypeEnum.Member, members?.ToArray())
+            await this.CreateDetailAssociation(detail, EntityTypeEnum.Member, memberIds?.ToArray())
                 .ConfigureAwait(false);
         }
 
-        public async Task CreateDetailAssociation(DetailReadModel detail, RelationshipReadModel relationship)
+        public async Task CreateRelationshipDetailAssociation(DetailReadModel detail, Guid relationshipId)
         {
-            await this.CreateDetailAssociation(detail, EntityTypeEnum.Relationship, relationship)
+            await this.CreateDetailAssociation(detail, EntityTypeEnum.Relationship, relationshipId)
                 .ConfigureAwait(false);
         }
 
-        public async Task CreateDetailAssociation(DetailReadModel detail, GroupReadModel group)
+        public async Task CreateGroupDetailAssociation(DetailReadModel detail, Guid groupId)
         {
-            await this.CreateDetailAssociation(detail, EntityTypeEnum.Group, group)
+            await this.CreateDetailAssociation(detail, EntityTypeEnum.Group, groupId)
                 .ConfigureAwait(false);
         }
 
-        private async Task CreateDetailAssociation<T>(DetailReadModel detail, EntityTypeEnum entityTypeEnum, params T[] items)
-            where T : class, IHasIdProperty
+        private async Task CreateDetailAssociation(DetailReadModel detail, EntityTypeEnum entityTypeEnum, params Guid[] entityIds)
         {
             if (detail == null)
             {
                 return;
             }
-            if (items == null || items.Length == 0)
+
+            if (entityIds == null || entityIds.Length == 0)
             {
                 return;
             }
@@ -76,9 +77,9 @@
             var entityType = await this.GetEntityType(entityTypeEnum).ConfigureAwait(false);
 
             IList<DetailAssociationCreateModel> detailAssociationsToCreate = new List<DetailAssociationCreateModel>();
-            foreach (var item in items)
+            foreach (var id in entityIds)
             {
-                if (detailAssociations != null && detailAssociations.Any(x => x.EntityId == item.Id))
+                if (detailAssociations != null && detailAssociations.Any(x => x.EntityId == id))
                 {
                     continue;
                 }
@@ -87,7 +88,7 @@
                 {
                     DetailId = detail.Id,
                     EntityTypeId = entityType.Id,
-                    EntityId = item.Id
+                    EntityId = id
                 });
             }
 

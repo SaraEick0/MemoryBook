@@ -1,5 +1,6 @@
 ﻿namespace MemoryBook.Repository.Member.Models
 {
+    using System;
     using System.Collections.Generic;
     using Detail.Models;
     using Group.Models;
@@ -15,10 +16,10 @@
 
 		public string CommonName { get; set; }                  // Nickname
 
-		public IList<GroupReadModel> Groups { get; set; } = new List<GroupReadModel>();
+		public IList<Guid> GroupIds { get; set; } = new List<Guid>();
 
-		public IList<RelationshipReadModel> Relationships { get; set; } = new List<RelationshipReadModel>();
+		public IList<Guid> RelationshipIds { get; set; } = new List<Guid>();
 
-		public IList<DetailReadModel> Details { get; set; } = new List<DetailReadModel>();
+		public IList<Guid> DetailIds { get; set; } = new List<Guid>();
     }
 }

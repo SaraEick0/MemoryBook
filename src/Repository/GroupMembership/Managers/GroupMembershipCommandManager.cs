@@ -12,12 +12,12 @@
 
     public class GroupMembershipCommandManager : IGroupMembershipCommandManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public GroupMembershipCommandManager(MemoryBookDbContext dbContext)
+        public GroupMembershipCommandManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<Guid>> CreateGroupMembership(Guid memoryBookUniverseId, params GroupMembershipCreateModel[] models)
@@ -29,9 +29,9 @@
 
             IList<GroupMembership> entities = models.Select(model => CreateEntity(memoryBookUniverseId, model)).ToList();
 
-            this.dbContext.AddRange(entities);
+            this.databaseContext.AddRange(entities);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
 
             return entities.Select(x => x.Id).ToList();
         }
@@ -43,16 +43,16 @@
                 return;
             }
 
-            var groupMemberships = await dbContext.Set<GroupMembership>()
+            var groupMemberships = await databaseContext.Set<GroupMembership>()
                 .Where(x => x.Group.MemoryBookUniverseId == memoryBookUniverseId)
                 .Where(x => groupMembershipIds.Contains(x.Id))
                 .AsNoTracking()
                 .ToListAsync()
                 .ConfigureAwait(false);
 
-            this.dbContext.RemoveRange(groupMemberships);
+            this.databaseContext.RemoveRange(groupMemberships);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static GroupMembership CreateEntity(Guid memoryBookUniverseId, GroupMembershipCreateModel model)

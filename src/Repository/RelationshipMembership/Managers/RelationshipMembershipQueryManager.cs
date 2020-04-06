@@ -13,17 +13,17 @@
 
     public class RelationshipMembershipQueryManager : IRelationshipMembershipQueryManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public RelationshipMembershipQueryManager(MemoryBookDbContext dbContext)
+        public RelationshipMembershipQueryManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<RelationshipMembershipReadModel>> GetAllRelationshipMemberships(Guid memoryBookUniverseId)
         {
-            return await dbContext.Set<RelationshipMembership>()
+            return await databaseContext.Set<RelationshipMembership>()
                 .Where(x => x.Relationship.MemoryBookUniverseId == memoryBookUniverseId)
                 .Include(x => x.Relationship)
                 .Include(x => x.Member)
@@ -33,17 +33,23 @@
                 .ToListAsync();
         }
 
-        public async Task<IList<RelationshipMembershipReadModel>> GetRelationshipMembershipsForMembers(Guid memoryBookUniverseId, IList<Guid> memberIds)
+        public async Task<IList<RelationshipMembershipByMemberModel>> GetRelationshipMembershipsForMembers(Guid memoryBookUniverseId, IList<Guid> memberIds)
         {
-            return await dbContext.Set<RelationshipMembership>()
+            var relationshipMemberships =  await databaseContext.Set<RelationshipMembership>()
                 .Where(x => x.Relationship.MemoryBookUniverseId == memoryBookUniverseId)
                 .Where(x => memberIds.Contains(x.MemberId))
                 .Include(x => x.Relationship)
                 .Include(x => x.Member)
                 .Include(x => x.MemberRelationshipType)
                 .AsNoTracking()
-                .Select(x => x.ToReadModel())
                 .ToListAsync();
+
+            return relationshipMemberships.GroupBy(x => x.MemberId)
+                .Select(x => new RelationshipMembershipByMemberModel
+                {
+                    MemberId = x.Key,
+                    RelationshipMemberships = x.Select(m => m.ToReadModel()).ToList()
+                }).ToList();
         }
     }
 }

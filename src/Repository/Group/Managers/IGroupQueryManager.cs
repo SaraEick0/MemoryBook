@@ -9,6 +9,6 @@
     {
         Task<IList<GroupReadModel>> GetAllGroups(Guid memoryBookUniverseId);
 
-        Task<IList<GroupReadModel>> GetGroups(Guid memoryBookUniverseId, IList<Guid> groupIds);
+        Task<IList<GroupReadModel>> GetGroups(Guid memoryBookUniverseId, params Guid[] groupIds);
     }
 }

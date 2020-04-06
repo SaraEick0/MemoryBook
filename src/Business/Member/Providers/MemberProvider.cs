@@ -1,6 +1,7 @@
 ﻿namespace MemoryBook.Business.Member.Providers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Common.Extensions;
@@ -19,6 +20,20 @@
 
             this.memberCommandManager = memberCommandManager ?? throw new ArgumentNullException(nameof(memberCommandManager));
             this.memberQueryManager = memberQueryManager ?? throw new ArgumentNullException(nameof(memberQueryManager));
+        }
+
+        public async Task<IList<MemberReadModel>> GetAllMembers(Guid memoryBookUniverseId)
+        {
+            return await this.memberQueryManager.GetAllMembers(memoryBookUniverseId)
+                .ConfigureAwait(false);
+        }
+
+        public async Task<IList<MemberReadModel>> GetMembers(Guid memoryBookUniverseId, IList<Guid> memberIds)
+        {
+            Contract.RequiresNotNull(memberIds, nameof(memberIds));
+
+            return await this.memberQueryManager.GetMembers(memoryBookUniverseId, memberIds)
+                .ConfigureAwait(false);
         }
 
         public async Task<MemberReadModel> CreateMember(Guid memoryBookUniverseId, string firstName, string middleName, string lastName, string commonName)

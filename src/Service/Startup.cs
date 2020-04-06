@@ -67,7 +67,7 @@
                 services.AddSwaggerGeneration();
             }
 
-            services.AddDatabaseContexts(this.ApplicationOptions.ConnectionString);
+            services.AddDatabaseContexts(this.ApplicationOptions.ConnectionString, ServiceLifetime.Scoped);
 
             services.AddSecurity();
 

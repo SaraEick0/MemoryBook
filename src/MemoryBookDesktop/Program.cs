@@ -22,7 +22,7 @@ namespace MemoryBook.Desktop
             var connectionString = ConfigurationManager.AppSettings["ConnectionString"];
 
             services.ConfigureServices();
-            services.AddDatabaseContexts(connectionString);
+            services.AddDatabaseContexts(connectionString, ServiceLifetime.Transient);
 
             ServiceProvider serviceProvider = services.BuildServiceProvider();
 

@@ -10,5 +10,7 @@
         Task<IList<DetailReadModel>> GetAllDetails(Guid memoryBookUniverseId);
 
         Task<IList<DetailReadModel>> GetDetails(Guid memoryBookUniverseId, IList<Guid> detailIds);
+
+        Task<IList<DetailReadModel>> GetDetailsByEntity(Guid memoryBookUniverseId, Guid[] entityIds);
     }
 }

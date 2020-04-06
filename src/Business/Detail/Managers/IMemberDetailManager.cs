@@ -8,8 +8,8 @@
 
     public interface IMemberDetailManager
     {
-        Task<DetailReadModel> CreateBirthday(MemberReadModel creator, MemberReadModel member, DateTime birthday, string birthplace = null);
+        Task<DetailReadModel> CreateBirthday(Guid memoryBookUniverseId, MemberReadModel creator, Guid memberId, DateTime birthday, string birthplace = null);
 
-        Task<DetailReadModel> CreateEvent(MemberReadModel creator, IList<MemberReadModel> memberAttendees, DateTime? startDate, DateTime? endDate, string description);
+        Task<DetailReadModel> CreateEvent(MemberReadModel creator, IList<Guid> memberAttendees, DateTime? startDate, DateTime? endDate, string description);
     }
 }

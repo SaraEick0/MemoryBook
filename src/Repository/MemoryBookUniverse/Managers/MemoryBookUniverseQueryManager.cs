@@ -13,17 +13,17 @@
 
     public class MemoryBookUniverseQueryManager : IMemoryBookUniverseQueryManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public MemoryBookUniverseQueryManager(MemoryBookDbContext dbContext)
+        public MemoryBookUniverseQueryManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<MemoryBookUniverseReadModel>> GetAllMemoryBookUniverses()
         {
-            return await dbContext.Set<MemoryBookUniverse>()
+            return await databaseContext.Set<MemoryBookUniverse>()
                 .AsNoTracking()
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
@@ -36,7 +36,7 @@
                 return new List<MemoryBookUniverseReadModel>();
             }
 
-            return await dbContext.Set<MemoryBookUniverse>()
+            return await databaseContext.Set<MemoryBookUniverse>()
                 .AsNoTracking()
                 .Where(x => universeIds.Contains(x.Id))
                 .Select(x => x.ToReadModel())
@@ -50,7 +50,7 @@
                 return new List<MemoryBookUniverseReadModel>();
             }
 
-            return await dbContext.Set<MemoryBookUniverse>()
+            return await databaseContext.Set<MemoryBookUniverse>()
                 .AsNoTracking()
                 .Where(x => names.Contains(x.Name))
                 .Select(x => x.ToReadModel())

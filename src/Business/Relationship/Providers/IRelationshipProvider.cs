@@ -1,4 +1,4 @@
-﻿namespace MemoryBook.Business.Member.Providers
+﻿namespace MemoryBook.Business.Relationship.Providers
 {
     using System;
     using System.Collections.Generic;

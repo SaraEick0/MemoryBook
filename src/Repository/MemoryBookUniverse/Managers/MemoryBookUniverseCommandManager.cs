@@ -12,12 +12,12 @@
 
     public class MemoryBookUniverseCommandManager : IMemoryBookUniverseCommandManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public MemoryBookUniverseCommandManager(MemoryBookDbContext dbContext)
+        public MemoryBookUniverseCommandManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<Guid>> CreateMemoryBookUniverse(params MemoryBookUniverseCreateModel[] models)
@@ -29,9 +29,9 @@
 
             List<MemoryBookUniverse> entities = models.Select(CreateEntity).ToList();
 
-            this.dbContext.AddRange(entities);
+            this.databaseContext.AddRange(entities);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
 
             return entities.Select(x => x.Id).ToList();
         }
@@ -43,12 +43,12 @@
                 return;
             }
 
-            foreach (var entry in this.dbContext.ChangeTracker.Entries().ToList())
+            foreach (var entry in this.databaseContext.ChangeTracker.Entries().ToList())
             {
-                this.dbContext.Entry(entry.Entity).State = EntityState.Detached;
+                this.databaseContext.Entry(entry.Entity).State = EntityState.Detached;
             }
 
-            Dictionary<Guid, MemoryBookUniverse> universeDictionary = dbContext.Set<MemoryBookUniverse>()
+            Dictionary<Guid, MemoryBookUniverse> universeDictionary = databaseContext.Set<MemoryBookUniverse>()
                 .AsNoTracking()
                 .ToDictionary(x => x.Id);
 
@@ -60,10 +60,10 @@
                     continue;
                 }
 
-                this.dbContext.Remove(entity);
+                this.databaseContext.Remove(entity);
             }
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static MemoryBookUniverse CreateEntity(MemoryBookUniverseCreateModel model)

@@ -13,17 +13,17 @@
 
     public class EntityTypeQueryManager : IEntityTypeQueryManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public EntityTypeQueryManager(MemoryBookDbContext dbContext)
+        public EntityTypeQueryManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<EntityTypeReadModel>> GetAllEntityTypes()
         {
-            return await dbContext.Set<EntityType>()
+            return await databaseContext.Set<EntityType>()
                 .AsNoTracking()
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
@@ -36,9 +36,9 @@
                 return new List<EntityTypeReadModel>();
             }
 
-            return await dbContext.Set<EntityType>()
+            return await databaseContext.Set<EntityType>()
                 .AsNoTracking()
-                .Where(x => entityTypes.Any(r => r.ToString().Equals(x.Code, StringComparison.OrdinalIgnoreCase)))
+                .Where(x => entityTypes.Any(r => r.ToString().Equals(x.Code)))
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
         }

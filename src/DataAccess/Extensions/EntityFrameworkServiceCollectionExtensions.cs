@@ -9,7 +9,7 @@
 
     public static class EntityFrameworkServiceCollectionExtensions
     {
-        public static IServiceCollection AddDatabaseContexts(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddDatabaseContexts(this IServiceCollection services, string connectionString, ServiceLifetime serviceLifetime)
         {
             var optionsBuilder = new DbContextOptionsBuilder<MemoryBookDbContext>();
 
@@ -26,7 +26,7 @@
             services.AddSingleton(x => optionsBuilder
                     .Options);
 
-            services.AddDbContext<MemoryBookDbContext>(ServiceLifetime.Scoped);
+            services.AddDbContext<MemoryBookDbContext>(serviceLifetime);
 
             return services;
         }

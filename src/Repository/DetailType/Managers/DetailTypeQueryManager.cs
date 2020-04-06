@@ -13,17 +13,17 @@
 
     public class DetailTypeQueryManager : IDetailTypeQueryManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public DetailTypeQueryManager(MemoryBookDbContext dbContext)
+        public DetailTypeQueryManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<DetailTypeReadModel>> GetAllDetailTypes()
         {
-            return await dbContext.Set<DetailType>()
+            return await databaseContext.Set<DetailType>()
                 .AsNoTracking()
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
@@ -36,7 +36,7 @@
                 return new List<DetailTypeReadModel>();
             }
 
-            return await dbContext.Set<DetailType>()
+            return await databaseContext.Set<DetailType>()
                 .AsNoTracking()
                 .Where(x => detailTypes.Any(r => r.ToString().Equals(x.Code, StringComparison.OrdinalIgnoreCase)))
                 .Select(x => x.ToReadModel())

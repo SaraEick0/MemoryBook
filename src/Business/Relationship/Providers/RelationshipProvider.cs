@@ -1,4 +1,4 @@
-﻿namespace MemoryBook.Business.Member.Providers
+﻿namespace MemoryBook.Business.Relationship.Providers
 {
     using System;
     using System.Collections.Generic;
@@ -9,27 +9,21 @@
     using Models;
     using Repository.Relationship.Managers;
     using Repository.Relationship.Models;
-    using Repository.RelationshipMembership.Managers;
-    using Repository.RelationshipMembership.Models;
 
     public class RelationshipProvider : IRelationshipProvider
     {
         private readonly IRelationshipCommandManager relationshipCommandManager;
         private readonly IRelationshipQueryManager relationshipQueryManager;
-        private readonly IRelationshipMembershipCommandManager relationshipMembershipCommandManager;
 
         public RelationshipProvider(
             IRelationshipCommandManager relationshipCommandManager,
-            IRelationshipQueryManager relationshipQueryManager,
-            IRelationshipMembershipCommandManager relationshipMembershipCommandManager)
+            IRelationshipQueryManager relationshipQueryManager)
         {
             Contract.RequiresNotNull(relationshipCommandManager, nameof(relationshipCommandManager));
             Contract.RequiresNotNull(relationshipQueryManager, nameof(relationshipQueryManager));
-            Contract.RequiresNotNull(relationshipMembershipCommandManager, nameof(relationshipMembershipCommandManager));
 
             this.relationshipCommandManager = relationshipCommandManager;
             this.relationshipQueryManager = relationshipQueryManager;
-            this.relationshipMembershipCommandManager = relationshipMembershipCommandManager;
         }
 
         public async Task<IList<RelationshipReadModel>> GetRelationships(Guid memoryBookUniverseId, IList<Guid> relationshipIds)
@@ -64,20 +58,6 @@
                 .ConfigureAwait(false);
 
             var relationshipId = relationshipIds.FirstOrDefault();
-
-            IList<RelationshipMembershipCreateModel> relationshipMembershipCreateModels = relationshipMembers
-                .Select(x => new RelationshipMembershipCreateModel
-                {
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    MemberId = x.Member.Id,
-                    MemberRelationshipTypeId = x.RelationshipType.Id,
-                    RelationshipId = relationshipId
-                }).ToList();
-
-            await this.relationshipMembershipCommandManager
-                .CreateRelationshipMembership(relationshipMembershipCreateModels.ToArray())
-                .ConfigureAwait(false);
 
             return relationshipId;
         }

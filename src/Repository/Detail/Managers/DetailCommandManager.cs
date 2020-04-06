@@ -12,12 +12,12 @@
 
     public class DetailCommandManager : IDetailCommandManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public DetailCommandManager(MemoryBookDbContext dbContext)
+        public DetailCommandManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<Guid>> CreateDetails(Guid memoryBookUniverseId, params DetailCreateModel[] models)
@@ -29,9 +29,9 @@
 
             List<Detail> entities = models.Select(x => CreateEntity(memoryBookUniverseId, x)).ToList();
 
-            this.dbContext.AddRange(entities);
+            this.databaseContext.AddRange(entities);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
 
             return entities.Select(x => x.Id).ToList();
         }
@@ -43,7 +43,7 @@
                 return;
             }
 
-            Dictionary<Guid, Detail> groupDictionary = dbContext.Set<Detail>()
+            Dictionary<Guid, Detail> groupDictionary = databaseContext.Set<Detail>()
                 .Where(x => x.Creator.MemoryBookUniverseId == memoryBookUniverseId)
                 .AsNoTracking()
                 .ToDictionary(x => x.Id);
@@ -59,9 +59,9 @@
                 entitiesToUpdate.Add(UpdateEntity(entity, model));
             }
 
-            this.dbContext.AddRange(entitiesToUpdate);
+            this.databaseContext.AddRange(entitiesToUpdate);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteDetails(Guid memoryBookUniverseId, params Guid[] groupIds)
@@ -71,7 +71,7 @@
                 return;
             }
 
-            Dictionary<Guid, Detail> groupDictionary = dbContext.Set<Detail>()
+            Dictionary<Guid, Detail> groupDictionary = databaseContext.Set<Detail>()
                 .Where(x => x.Creator.MemoryBookUniverseId == memoryBookUniverseId)
                 .AsNoTracking()
                 .ToDictionary(x => x.Id);
@@ -87,9 +87,9 @@
                 entitiesToDelete.Add(entity);
             }
 
-            this.dbContext.RemoveRange(entitiesToDelete);
+            this.databaseContext.RemoveRange(entitiesToDelete);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static Detail CreateEntity(Guid memoryBookUniverseId, DetailCreateModel model)

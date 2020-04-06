@@ -4,12 +4,10 @@ namespace MemoryBook.Business.Detail.Managers
 {
     using System.Threading.Tasks;
     using Common.Extensions;
-    using Member.Extensions;
     using Providers;
     using Repository.Detail.Models;
     using Repository.DetailType;
     using Repository.Member.Models;
-    using Repository.Relationship.Models;
 
     public class RelationshipDetailManager : IRelationshipDetailManager
     {
@@ -27,12 +25,11 @@ namespace MemoryBook.Business.Detail.Managers
 
         public async Task<DetailReadModel> CreateWedding(
             MemberReadModel creator,
-            RelationshipReadModel relationship,
+            Guid relationshipId,
             DateTime weddingDate,
             string weddingLocation = null)
         {
             Contract.RequiresNotNull(creator, nameof(creator));
-            Contract.RequiresNotNull(relationship, nameof(relationship));
 
             string weddingLocationText = string.Empty;
             if (!string.IsNullOrWhiteSpace(weddingLocation))
@@ -49,10 +46,8 @@ namespace MemoryBook.Business.Detail.Managers
                     weddingDate)
                 .ConfigureAwait(false);
 
-            await this.detailAssociationProvider.CreateDetailAssociation(detail, relationship)
+            await this.detailAssociationProvider.CreateRelationshipDetailAssociation(detail, relationshipId)
                 .ConfigureAwait(false);
-
-            relationship.AddDetail(detail);
 
             return detail;
         }

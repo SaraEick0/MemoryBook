@@ -1,18 +1,16 @@
 ﻿namespace MemoryBook.Business.Detail.Providers
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Repository.Detail.Models;
-    using Repository.Group.Models;
-    using Repository.Member.Models;
-    using Repository.Relationship.Models;
 
     public interface IDetailAssociationProvider
     {
-        Task CreateDetailAssociation(DetailReadModel detail, IList<MemberReadModel> members);
+        Task CreateMemberDetailAssociation(DetailReadModel detail, IList<Guid> memberIds);
 
-        Task CreateDetailAssociation(DetailReadModel detail, RelationshipReadModel relationship);
+        Task CreateRelationshipDetailAssociation(DetailReadModel detail, Guid relationshipId);
 
-        Task CreateDetailAssociation(DetailReadModel detail, GroupReadModel group);
+        Task CreateGroupDetailAssociation(DetailReadModel detail, Guid groupId);
     }
 }

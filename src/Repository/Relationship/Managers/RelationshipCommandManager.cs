@@ -12,12 +12,12 @@
 
     public class RelationshipCommandManager : IRelationshipCommandManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public RelationshipCommandManager(MemoryBookDbContext dbContext)
+        public RelationshipCommandManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<Guid>> CreateRelationship(Guid memoryBookUniverseId, params RelationshipCreateModel[] models)
@@ -29,9 +29,9 @@
 
             IEnumerable<Relationship> entities = models.Select(model => CreateEntity(memoryBookUniverseId, model)).ToList();
 
-            this.dbContext.AddRange(entities);
+            this.databaseContext.AddRange(entities);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
 
             return entities.Select(x => x.Id).ToList();
         }
@@ -43,16 +43,16 @@
                 return;
             }
 
-            var relationships = await dbContext.Set<Relationship>()
+            var relationships = await databaseContext.Set<Relationship>()
                 .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
                 .Where(x => relationshipIds.Contains(x.Id))
                 .AsNoTracking()
                 .ToListAsync()
                 .ConfigureAwait(false);
 
-            this.dbContext.RemoveRange(relationships);
+            this.databaseContext.RemoveRange(relationships);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static Relationship CreateEntity(Guid memoryBookUniverseId, RelationshipCreateModel model)

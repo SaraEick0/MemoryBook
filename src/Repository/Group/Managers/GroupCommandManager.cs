@@ -13,12 +13,12 @@
 
     public class GroupCommandManager : IGroupCommandManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public GroupCommandManager(MemoryBookDbContext dbContext)
+        public GroupCommandManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<MemoryBookResponseModel> CreateGroups(Guid memoryBookUniverseId, params GroupCreateModel[] models)
@@ -38,9 +38,9 @@
                 entities.Add(entity);
             }
 
-            this.dbContext.AddRange(entities);
+            this.databaseContext.AddRange(entities);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
 
             response.Ids = entities.Select(x => x.Id).ToList();
 
@@ -54,7 +54,7 @@
                 return;
             }
 
-            var groupDictionary = dbContext.Set<Group>()
+            var groupDictionary = databaseContext.Set<Group>()
                 .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
                 .AsNoTracking()
                 .ToDictionary(x => x.Id);
@@ -74,9 +74,9 @@
                 entitiesToUpdate.Add(entity);
             }
 
-            this.dbContext.AddRange(entitiesToUpdate);
+            this.databaseContext.AddRange(entitiesToUpdate);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteGroups(Guid memoryBookUniverseId, params Guid[] groupIds)
@@ -86,7 +86,7 @@
                 return;
             }
 
-            var groupDictionary = dbContext.Set<Group>()
+            var groupDictionary = databaseContext.Set<Group>()
                 .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
                 .AsNoTracking()
                 .ToDictionary(x => x.Id);
@@ -102,9 +102,9 @@
                 entitiesToDelete.Add(entity);
             }
 
-            this.dbContext.RemoveRange(entitiesToDelete);
+            this.databaseContext.RemoveRange(entitiesToDelete);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static Group CreateEntity(Guid memoryBookUniverseId, GroupCreateModel model)

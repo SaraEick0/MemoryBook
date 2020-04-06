@@ -5,9 +5,10 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Common.Extensions;
+    using MemoryBook.Business.Detail.Models;
+    using MemoryBook.Repository.Detail.Models;
     using Microsoft.Extensions.Caching.Memory;
     using Repository.Detail.Managers;
-    using Repository.Detail.Models;
     using Repository.DetailType;
     using Repository.DetailType.Managers;
     using Repository.DetailType.Models;
@@ -50,6 +51,37 @@
 
             return await this.CreateDetail(memoryBookUniverseId, detailCreateModel)
                 .ConfigureAwait(false);
+        }
+
+        public async Task<IList<DetailsByEntityModel>> GetDetailsForGroups(Guid memoryBookUniverseId, params Guid[] groupIds)
+        {
+            return await this.GetDetailsForEntities(memoryBookUniverseId, groupIds)
+                .ConfigureAwait(false);
+        }
+
+        public async Task<IList<DetailsByEntityModel>> GetDetailsForMembers(Guid memoryBookUniverseId, params Guid[] memberIds)
+        {
+            return await this.GetDetailsForEntities(memoryBookUniverseId, memberIds)
+                .ConfigureAwait(false);
+        }
+
+        public async Task<IList<DetailsByEntityModel>> GetDetailsForRelationships(Guid memoryBookUniverseId, params Guid[] relationshipIds)
+        {
+            return await this.GetDetailsForEntities(memoryBookUniverseId, relationshipIds)
+                .ConfigureAwait(false);
+        }
+
+        private async Task<IList<DetailsByEntityModel>> GetDetailsForEntities(Guid memoryBookUniverseId, params Guid[] entityIds)
+        {
+            IList<DetailReadModel> details = await this.detailQueryManager.GetDetailsByEntity(memoryBookUniverseId, entityIds).ConfigureAwait(false);
+
+            return details?.SelectMany(x => x.EntityIds.Select(entityId => new { EntityId = entityId, Detail = x }))
+                .GroupBy(x => x.EntityId)
+                .Select(x => new DetailsByEntityModel
+                {
+                    EntityId = x.Key,
+                    Details = x.Select(p => p.Detail).ToList()
+                }).ToList();
         }
 
         private async Task<DetailReadModel> CreateDetail(Guid memoryBookUniverseId, DetailCreateModel detailCreateModel)

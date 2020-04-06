@@ -8,30 +8,27 @@
     using DataAccess.Entities;
     using Extensions;
     using MemoryBook.Common.Extensions;
+    using MemoryBook.Repository.Detail.Extensions;
+    using MemoryBook.Repository.EntityType;
     using Microsoft.EntityFrameworkCore;
     using Models;
 
     public class RelationshipQueryManager : IRelationshipQueryManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public RelationshipQueryManager(MemoryBookDbContext dbContext)
+        public RelationshipQueryManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<RelationshipReadModel>> GetAllRelationships(Guid memoryBookUniverseId)
         {
-            return await dbContext.Set<Relationship>()
-                .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
-                .Include(x => x.RelationshipMemberships)
-                .ThenInclude(x => x.MemberRelationshipType)
-                .Include(x => x.RelationshipMemberships)
-                .ThenInclude(x => x.Member)
-                .AsNoTracking()
-                .Select(x => x.ToReadModel())
+            var entities = await this.GetBaseQuery(memoryBookUniverseId)
                 .ToListAsync();
+
+            return await this.BuildModels(memoryBookUniverseId, entities).ConfigureAwait(false);
         }
 
         public async Task<IList<RelationshipReadModel>> GetRelationships(Guid memoryBookUniverseId, params Guid[] relationshipIds)
@@ -41,16 +38,34 @@
                 return new List<RelationshipReadModel>();
             }
 
-            return await dbContext.Set<Relationship>()
-                .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
+            var entities = await this.GetBaseQuery(memoryBookUniverseId)
                 .Where(x => relationshipIds.Contains(x.Id))
+                .ToListAsync();
+
+            return await this.BuildModels(memoryBookUniverseId, entities).ConfigureAwait(false);
+        }
+
+        private async Task<IList<RelationshipReadModel>> BuildModels(Guid memoryBookUniverseId, IList<Relationship> entities)
+        {
+            if (entities == null || entities.Count == 0)
+            {
+                return new List<RelationshipReadModel>();
+            }
+
+            ILookup<Guid, Guid> detailLookup = await this.databaseContext.GetDetailLookup(memoryBookUniverseId, EntityTypeEnum.Relationship).ConfigureAwait(false);
+
+            return entities.Select(x => x.ToReadModel(detailLookup[x.Id]?.ToList())).ToList();
+        }
+
+        private IQueryable<Relationship> GetBaseQuery(Guid memoryBookUniverseId)
+        {
+            return this.databaseContext.Set<Relationship>()
+                .AsNoTracking()
+                .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
                 .Include(x => x.RelationshipMemberships)
                 .ThenInclude(x => x.MemberRelationshipType)
                 .Include(x => x.RelationshipMemberships)
-                .ThenInclude(x => x.Member)
-                .AsNoTracking()
-                .Select(x => x.ToReadModel())
-                .ToListAsync();
+                .ThenInclude(x => x.Member);
         }
     }
 }

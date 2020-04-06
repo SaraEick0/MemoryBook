@@ -12,12 +12,12 @@
 
     public class RelationshipMembershipCommandManager : IRelationshipMembershipCommandManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public RelationshipMembershipCommandManager(MemoryBookDbContext dbContext)
+        public RelationshipMembershipCommandManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<Guid>> CreateRelationshipMembership(params RelationshipMembershipCreateModel[] models)
@@ -29,9 +29,9 @@
 
             IList<RelationshipMembership> entities = models.Select(CreateEntity).ToList();
 
-            this.dbContext.AddRange(entities);
+            this.databaseContext.AddRange(entities);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
 
             return entities.Select(x => x.Id).ToList();
         }
@@ -43,16 +43,16 @@
                 return;
             }
 
-            var relationships = await dbContext.Set<RelationshipMembership>()
+            var relationships = await databaseContext.Set<RelationshipMembership>()
                 .Where(x => x.Relationship.MemoryBookUniverseId == memoryBookUniverseId)
                 .Where(x => relationshipMembershipIds.Contains(x.Id))
                 .AsNoTracking()
                 .ToListAsync()
                 .ConfigureAwait(false);
 
-            this.dbContext.RemoveRange(relationships);
+            this.databaseContext.RemoveRange(relationships);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static RelationshipMembership CreateEntity(RelationshipMembershipCreateModel model)

@@ -9,6 +9,8 @@
     {
         Task<IList<MemberReadModel>> GetAllMembers(Guid memoryBookUniverseId);
 
+        Task<IList<MemberReadModel>> GetMembersByGroup(Guid memoryBookUniverseId, Guid groupId);
+
         Task<IList<MemberReadModel>> GetMembers(Guid memoryBookUniverseId, IList<Guid> memberIds);
     }
 }

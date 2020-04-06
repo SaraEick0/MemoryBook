@@ -12,12 +12,12 @@
 
     public class RelationshipTypeCommandManager : IRelationshipTypeCommandManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public RelationshipTypeCommandManager(MemoryBookDbContext dbContext)
+        public RelationshipTypeCommandManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task CreateRelationshipType(params RelationshipTypeCreateModel[] models)
@@ -29,9 +29,9 @@
 
             List<RelationshipType> entities = models.Select(CreateEntity).ToList();
 
-            this.dbContext.AddRange(entities);
+            this.databaseContext.AddRange(entities);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task UpdateRelationshipType(params RelationshipTypeUpdateModel[] models)
@@ -41,7 +41,7 @@
                 return;
             }
 
-            Dictionary<Guid, RelationshipType> groupDictionary = dbContext.Set<RelationshipType>()
+            Dictionary<Guid, RelationshipType> groupDictionary = databaseContext.Set<RelationshipType>()
                 .AsNoTracking()
                 .ToDictionary(x => x.Id);
 
@@ -56,9 +56,9 @@
                 entitiesToUpdate.Add(UpdateEntity(entity, model));
             }
 
-            this.dbContext.AddRange(entitiesToUpdate);
+            this.databaseContext.AddRange(entitiesToUpdate);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteRelationshipType(params Guid[] groupIds)
@@ -68,7 +68,7 @@
                 return;
             }
 
-            Dictionary<Guid, RelationshipType> groupDictionary = dbContext.Set<RelationshipType>()
+            Dictionary<Guid, RelationshipType> groupDictionary = databaseContext.Set<RelationshipType>()
                 .AsNoTracking()
                 .ToDictionary(x => x.Id);
 
@@ -83,9 +83,9 @@
                 entitiesToDelete.Add(entity);
             }
 
-            this.dbContext.RemoveRange(entitiesToDelete);
+            this.databaseContext.RemoveRange(entitiesToDelete);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static RelationshipType CreateEntity(RelationshipTypeCreateModel model)

@@ -62,9 +62,11 @@
         {
             foreach (string documentationFileName in documentationFileNames)
             {
-                string str = Path.Combine(AppContext.BaseDirectory, documentationFileName);
-                if (File.Exists(str))
-                    options.IncludeXmlComments(str, false);
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, documentationFileName);
+                if (File.Exists(xmlPath))
+                {
+                    options.IncludeXmlComments(xmlPath, true);
+                }
             }
             return options;
         }

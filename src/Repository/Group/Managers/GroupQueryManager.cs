@@ -8,45 +8,62 @@
     using DataAccess.Entities;
     using Extensions;
     using MemoryBook.Common.Extensions;
+    using MemoryBook.Repository.Detail.Extensions;
+    using MemoryBook.Repository.EntityType;
     using Microsoft.EntityFrameworkCore;
     using Models;
 
     public class GroupQueryManager : IGroupQueryManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public GroupQueryManager(MemoryBookDbContext dbContext)
+        public GroupQueryManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<GroupReadModel>> GetAllGroups(Guid memoryBookUniverseId)
         {
-            return await dbContext.Set<Group>()
-                .AsNoTracking()
-                .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
-                .Include(x => x.GroupMemberships)
-                .ThenInclude(x => x.Member)
-                .Select(x => x.ToReadModel())
+            List<Group> groups = await this.GetBaseQuery(memoryBookUniverseId)
                 .ToListAsync();
+
+            return await this.BuildModels(memoryBookUniverseId, groups);
         }
 
-        public async Task<IList<GroupReadModel>> GetGroups(Guid memoryBookUniverseId, IList<Guid> memberIds)
+        public async Task<IList<GroupReadModel>> GetGroups(Guid memoryBookUniverseId, params Guid[] groupIds)
         {
-            if (memberIds == null || memberIds.Count == 0)
+            if (groupIds == null || groupIds.Length == 0)
             {
                 return new List<GroupReadModel>();
             }
 
-            return await dbContext.Set<Group>()
+            List<Group> groups = await this.GetBaseQuery(memoryBookUniverseId)
+                .Where(x => groupIds.Contains(x.Id))
+                .ToListAsync();
+
+            return await this.BuildModels(memoryBookUniverseId, groups);
+        }
+
+        private async Task<IList<GroupReadModel>> BuildModels(Guid memoryBookUniverseId, IList<Group> entities)
+        {
+            if (entities == null || entities.Count == 0)
+            {
+                return new List<GroupReadModel>();
+            }
+
+            ILookup<Guid, Guid> detailLookup = await this.databaseContext.GetDetailLookup(memoryBookUniverseId, EntityTypeEnum.Group).ConfigureAwait(false);
+
+            return entities.Select(x => x.ToReadModel(detailLookup[x.Id]?.ToList())).ToList();
+        }
+
+        private IQueryable<Group> GetBaseQuery(Guid memoryBookUniverseId)
+        {
+            return this.databaseContext.Set<Group>()
                 .AsNoTracking()
-                .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId)
-                .Where(x => memberIds.Contains(x.Id))
                 .Include(x => x.GroupMemberships)
                 .ThenInclude(x => x.Member)
-                .Select(x => x.ToReadModel())
-                .ToListAsync();
+                .Where(x => x.MemoryBookUniverseId == memoryBookUniverseId);
         }
     }
 }

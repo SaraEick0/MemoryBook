@@ -1,4 +1,4 @@
-﻿namespace MemoryBook.Business.Member.Models
+﻿namespace MemoryBook.Business.Relationship.Models
 {
     using Repository.Member.Models;
     using Repository.RelationshipType.Models;

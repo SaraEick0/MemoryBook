@@ -13,17 +13,17 @@
 
     public class RelationshipTypeQueryManager : IRelationshipTypeQueryManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public RelationshipTypeQueryManager(MemoryBookDbContext dbContext)
+        public RelationshipTypeQueryManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<RelationshipTypeReadModel>> GetAllRelationshipTypes()
         {
-            return await dbContext.Set<RelationshipType>()
+            return await databaseContext.Set<RelationshipType>()
                 .AsNoTracking()
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
@@ -36,7 +36,7 @@
                 return new List<RelationshipTypeReadModel>();
             }
 
-            return await dbContext.Set<RelationshipType>()
+            return await databaseContext.Set<RelationshipType>()
                 .AsNoTracking()
                 .Where(x => relationshipTypes.Any(r => r.ToString().Equals(x.Code, StringComparison.OrdinalIgnoreCase)))
                 .Select(x => x.ToReadModel())

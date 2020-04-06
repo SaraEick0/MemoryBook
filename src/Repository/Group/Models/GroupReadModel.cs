@@ -3,18 +3,16 @@
     using System;
     using System.Collections.Generic;
     using DataAccess.Interfaces;
-    using Detail.Models;
-    using Member.Models;
 
     public class GroupReadModel : GroupModelBase, IHasIdProperty
     {
         public Guid Id { get; set; }
 
-        public List<MemberReadModel> Members { get; set; } = new List<MemberReadModel>();
+        public IList<Guid> MemberIds { get; set; } = new List<Guid>();
 
         /// <summary>
         /// Note: Not populated by entity framework
         /// </summary>
-        public List<DetailReadModel> Details { get; set; } = new List<DetailReadModel>();
+        public IList<Guid> DetailIds { get; set; } = new List<Guid>();
     }
 }

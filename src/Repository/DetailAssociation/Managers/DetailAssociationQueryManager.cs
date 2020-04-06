@@ -14,12 +14,12 @@
 
     public class DetailAssociationQueryManager : IDetailAssociationQueryManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public DetailAssociationQueryManager(MemoryBookDbContext dbContext)
+        public DetailAssociationQueryManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<DetailAssociationReadModel>> GetDetailAssociationByDetailId(params Guid[] detailIds)
@@ -29,7 +29,7 @@
                 return new List<DetailAssociationReadModel>();
             }
 
-            return await dbContext.Set<DetailAssociation>()
+            return await databaseContext.Set<DetailAssociation>()
                 .AsNoTracking()
                 .Include(x => x.Detail)
                 .Include(x => x.EntityType)
@@ -45,7 +45,7 @@
                 return new List<DetailAssociationReadModel>();
             }
 
-            return await dbContext.Set<DetailAssociation>()
+            return await databaseContext.Set<DetailAssociation>()
                 .AsNoTracking()
                 .Include(x => x.Detail)
                 .Include(x => x.EntityType)
@@ -62,7 +62,7 @@
                 return new List<DetailAssociationReadModel>();
             }
 
-            return await dbContext.Set<DetailAssociation>()
+            return await databaseContext.Set<DetailAssociation>()
                 .AsNoTracking()
                 .Include(x => x.Detail)
                 .Include(x => x.EntityType)
@@ -79,7 +79,7 @@
                 return new List<DetailAssociationReadModel>();
             }
 
-            return await dbContext.Set<DetailAssociation>()
+            return await databaseContext.Set<DetailAssociation>()
                 .AsNoTracking()
                 .Include(x => x.Detail)
                 .Include(x => x.EntityType)

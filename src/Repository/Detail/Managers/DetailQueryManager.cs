@@ -8,27 +8,22 @@
     using DataAccess.Entities;
     using Extensions;
     using MemoryBook.Common.Extensions;
+    using MemoryBook.Repository.Detail.Models;
     using Microsoft.EntityFrameworkCore;
-    using Models;
 
     public class DetailQueryManager : IDetailQueryManager
     {
-        private readonly MemoryBookDbContext dbContext;
+        private readonly MemoryBookDbContext databaseContext;
 
-        public DetailQueryManager(MemoryBookDbContext dbContext)
+        public DetailQueryManager(MemoryBookDbContext databaseContext)
         {
-            Contract.RequiresNotNull(dbContext, nameof(dbContext));
-            this.dbContext = dbContext;
+            Contract.RequiresNotNull(databaseContext, nameof(databaseContext));
+            this.databaseContext = databaseContext;
         }
 
         public async Task<IList<DetailReadModel>> GetAllDetails(Guid memoryBookUniverseId)
         {
-            return await dbContext.Set<Detail>()
-                .AsNoTracking()
-                .Include(x => x.DetailType)
-                .Include(x => x.Creator)
-                .Include(x => x.Permissions)
-                .Where(x => x.Creator == null || x.Creator.MemoryBookUniverseId == memoryBookUniverseId)
+            return await this.GetBaseQuery(memoryBookUniverseId)
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
         }
@@ -40,15 +35,28 @@
                 return new List<DetailReadModel>();
             }
 
-            return await dbContext.Set<Detail>()
-                .AsNoTracking()
-                .Include(x => x.DetailType)
-                .Include(x => x.Creator)
-                .Include(x => x.Permissions)
-                .Where(x => x.Creator == null || x.Creator.MemoryBookUniverseId == memoryBookUniverseId)
+            return await this.GetBaseQuery(memoryBookUniverseId)
                 .Where(x => detailIds.Contains(x.Id))
                 .Select(x => x.ToReadModel())
                 .ToListAsync();
+        }
+
+        public async Task<IList<DetailReadModel>> GetDetailsByEntity(Guid memoryBookUniverseId, Guid[] entityIds)
+        {
+            return await this.GetBaseQuery(memoryBookUniverseId)
+                .Where(x => x.DetailAssociations.Any(r => entityIds.Contains(r.EntityId)))
+                .Select(x => x.ToReadModel())
+                .ToListAsync();
+        }
+
+        private IQueryable<Detail> GetBaseQuery(Guid memoryBookUniverseId)
+        {
+            return databaseContext.Set<Detail>()
+                .AsNoTracking()
+                .Include(x => x.DetailType)
+                .Include(x => x.Permissions)
+                .Include(x => x.DetailAssociations)
+                .Where(x => x.Creator == null || x.Creator.MemoryBookUniverseId == memoryBookUniverseId);
         }
     }
 }
