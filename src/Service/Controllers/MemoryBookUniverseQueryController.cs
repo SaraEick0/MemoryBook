@@ -28,7 +28,7 @@
         /// </summary>
         /// <returns>Returns all memory book universes.</returns>
         [HttpPost("GetAllMemoryBookUniverses")]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(MemoryBookUniverseReadModel))]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(IList<MemoryBookUniverseReadModel>))]
         [SwaggerOperation(OperationId = "GetAllMemoryBookUniverses")]
         public async Task<ActionResult> GetAllMemoryBookUniversesAsync()
         {
@@ -43,7 +43,7 @@
         /// <param name="memoryBookUniverseIds">The universe ids.</param>
         /// <returns>Returns memory book universes.</returns>
         [HttpPost("GetMemoryBookUniversesById")]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(MemoryBookUniverseReadModel))]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(IList<MemoryBookUniverseReadModel>))]
         [SwaggerOperation(OperationId = "GetMemoryBookUniversesById")]
         public async Task<ActionResult> GetMemoryBookUniversesByIdAsync([FromQuery] Guid[] memoryBookUniverseIds)
         {
@@ -58,7 +58,7 @@
         /// <param name="memoryBookNames">The universe names.</param>
         /// <returns>Returns memory book universes.</returns>
         [HttpPost("GetMemoryBookUniversesByName")]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(MemoryBookUniverseReadModel))]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(IList<MemoryBookUniverseReadModel>))]
         [SwaggerOperation(OperationId = "GetMemoryBookUniversesByName")]
         public async Task<ActionResult> GetMemoryBookUniversesByNameAsync([FromQuery] string[] memoryBookNames)
         {

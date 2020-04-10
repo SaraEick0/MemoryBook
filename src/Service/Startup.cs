@@ -45,6 +45,8 @@
                 }));
             }
 
+            app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
             app.UseResponseCompression();
 
             app.UseXContentTypeOptions();
