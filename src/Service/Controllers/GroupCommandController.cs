@@ -38,5 +38,37 @@
 
             return this.Ok(memoryBookResponseModel);
         }
+
+        /// <summary>
+        /// Updates groups.
+        /// </summary>
+        /// <param name="memoryBookUniverseId">The universe id.</param>
+        /// <param name="models">The groups to update.</param>
+        /// <returns>Returns a completed task.</returns>
+        [HttpPost("UpdateGroups")]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(void))]
+        [SwaggerOperation(OperationId = "UpdateGroups")]
+        public async Task<ActionResult> UpdateGroupsAsync([FromQuery] Guid memoryBookUniverseId, [FromBody] GroupUpdateModel[] models)
+        {
+            await this.manager.UpdateGroups(memoryBookUniverseId, models).ConfigureAwait(false);
+
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Deletes groups.
+        /// </summary>
+        /// <param name="memoryBookUniverseId">The universe id.</param>
+        /// <param name="groupIds">The group ids to delete.</param>
+        /// <returns>Returns a completed task.</returns>
+        [HttpPost("DeleteGroups")]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(void))]
+        [SwaggerOperation(OperationId = "DeleteGroups")]
+        public async Task<ActionResult> DeleteGroupsAsync([FromQuery] Guid memoryBookUniverseId, [FromBody] Guid[] groupIds)
+        {
+            await this.manager.DeleteGroups(memoryBookUniverseId, groupIds).ConfigureAwait(false);
+
+            return this.Ok();
+        }
     }
 }

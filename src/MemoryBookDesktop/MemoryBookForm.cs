@@ -105,15 +105,16 @@
                 {
                     sb.AppendLine("\n  Relationships");
 
-                    foreach (RelationshipViewModel rel in member.Relationships)
+                    foreach (CombinedRelationshipReadModel rel in member.Relationships)
                     {
-                        var isFirst = rel.FirstMemberId == member.Id;
-                        var selfRelationshipTypeCode = isFirst ? rel.FirstMemberRelationshipType : rel.SecondMemberRelationshipType;
-                        var other = isFirst ? group.Members.FirstOrDefault(x => x.Id == rel.SecondMemberId) : group.Members.FirstOrDefault(x => x.Id == rel.FirstMemberId);
+                        var self = rel.RelationshipMembers.First(x => x.MemberId == member.Id);
+                        var selfRelationshipTypeCode = self.MemberRelationshipTypeCode;
+                        var other = rel.RelationshipMembers.First(x => x.MemberId != member.Id);
+                        var otherMember = group.Members.First(x => x.Id == other.MemberId);
 
-                        string relName = other.CommonName;
+                        string relName = otherMember.CommonName;
 
-                        DetailViewModel relBirthday = other.GetBirthday();
+                        DetailViewModel relBirthday = otherMember.GetBirthday();
 
                         if (memberBirthday.StartDate <= relBirthday.StartDate)
                         {
@@ -157,7 +158,7 @@
             sb.AppendLine(string.Format("\nFun Facts!"));
 
             MemberViewModel mike = group.GetMember("Mike");
-            RelationshipViewModel rSpouse = mike.GetRelationship(RelationshipTypeEnum.Wife);
+            CombinedRelationshipReadModel rSpouse = mike.GetRelationship(RelationshipTypeEnum.Wife);
             DetailViewModel wedding = rSpouse.GetDetail(DetailTypeEnum.Wedding);
 
             MemberViewModel lisa = group.GetMember("Lisa");
@@ -251,18 +252,18 @@
             await this.memberDetailManager.CreateBirthday(universeId, sara, ian.Id, new DateTime(1993, 1, 19), "Reno, NV");
             await this.memberDetailManager.CreateBirthday(universeId, sara, david.Id, new DateTime(1991, 5, 25), "Grosse Pointe, MI");
 
-            var mikeDianeRelationshipId = await this.relationshipManager.CreateRelationship(mike, diane, RelationshipTypeEnum.Husband, RelationshipTypeEnum.Wife, new DateTime(1986, 6, 14), null);
+            var mikeDianeRelationshipId = await this.relationshipManager.CreateTwoPersonRelationship(mike, diane, RelationshipTypeEnum.Husband, RelationshipTypeEnum.Wife, new DateTime(1986, 6, 14), null);
 
-            await this.relationshipManager.CreateRelationship( mike, lisa, RelationshipTypeEnum.Father, RelationshipTypeEnum.Daughter, new DateTime(1988, 2, 21), null);
-            await this.relationshipManager.CreateRelationship( diane, lisa, RelationshipTypeEnum.Mother, RelationshipTypeEnum.Daughter, new DateTime(1988, 2, 21), null);
-            await this.relationshipManager.CreateRelationship( mike, sara, RelationshipTypeEnum.Father, RelationshipTypeEnum.Daughter, new DateTime(1993, 05, 11), null);
-            await this.relationshipManager.CreateRelationship( diane, sara, RelationshipTypeEnum.Mother, RelationshipTypeEnum.Daughter, new DateTime(1993, 05, 11), null);
+            await this.relationshipManager.CreateTwoPersonRelationship( mike, lisa, RelationshipTypeEnum.Father, RelationshipTypeEnum.Daughter, new DateTime(1988, 2, 21), null);
+            await this.relationshipManager.CreateTwoPersonRelationship( diane, lisa, RelationshipTypeEnum.Mother, RelationshipTypeEnum.Daughter, new DateTime(1988, 2, 21), null);
+            await this.relationshipManager.CreateTwoPersonRelationship( mike, sara, RelationshipTypeEnum.Father, RelationshipTypeEnum.Daughter, new DateTime(1993, 05, 11), null);
+            await this.relationshipManager.CreateTwoPersonRelationship( diane, sara, RelationshipTypeEnum.Mother, RelationshipTypeEnum.Daughter, new DateTime(1993, 05, 11), null);
 
-            await this.relationshipManager.CreateRelationship( lisa, sara, RelationshipTypeEnum.Sister, RelationshipTypeEnum.Sister, new DateTime(1993, 05, 11), null);
-            await this.relationshipManager.CreateRelationship( lisa, sara, RelationshipTypeEnum.Sister, RelationshipTypeEnum.Friend, new DateTime(2011, 05, 11), null);
+            await this.relationshipManager.CreateTwoPersonRelationship( lisa, sara, RelationshipTypeEnum.Sister, RelationshipTypeEnum.Sister, new DateTime(1993, 05, 11), null);
+            await this.relationshipManager.CreateTwoPersonRelationship( lisa, sara, RelationshipTypeEnum.Sister, RelationshipTypeEnum.Friend, new DateTime(2011, 05, 11), null);
 
-            await this.relationshipManager.CreateRelationship( david, sara, RelationshipTypeEnum.Boyfriend, RelationshipTypeEnum.Girlfriend, new DateTime(2018, 10, 26), null);
-            await this.relationshipManager.CreateRelationship( ian, lisa, RelationshipTypeEnum.Boyfriend, RelationshipTypeEnum.Girlfriend, new DateTime(2018, 10, 11), null);
+            await this.relationshipManager.CreateTwoPersonRelationship( david, sara, RelationshipTypeEnum.Boyfriend, RelationshipTypeEnum.Girlfriend, new DateTime(2018, 10, 26), null);
+            await this.relationshipManager.CreateTwoPersonRelationship( ian, lisa, RelationshipTypeEnum.Boyfriend, RelationshipTypeEnum.Girlfriend, new DateTime(2018, 10, 11), null);
 
             await this.relationshipDetailManager.CreateWedding(mike, mikeDianeRelationshipId, new DateTime(1986, 6, 14), "St. Johns Lutheran Church in New Baltimore, MI")
                 .ConfigureAwait(false);

@@ -42,24 +42,45 @@
         }
 
         public async Task<Guid> CreateRelationship(
-            IList<RelationshipMemberModel> relationshipMembers,
+            Guid memoryBookUniverseId,
             DateTime? startDate,
             DateTime? endDate)
         {
-            Contract.RequiresNotNullOrEmpty(relationshipMembers, nameof(relationshipMembers));
-
             RelationshipCreateModel relationship = new RelationshipCreateModel
             {
                 StartDate = startDate,
                 EndDate = endDate
             };
 
-            IList<Guid> relationshipIds = await this.relationshipCommandManager.CreateRelationship(relationshipMembers.First().Member.MemoryBookUniverseId, relationship)
+            IList<Guid> relationshipIds = await this.relationshipCommandManager.CreateRelationships(memoryBookUniverseId, relationship)
                 .ConfigureAwait(false);
 
             var relationshipId = relationshipIds.FirstOrDefault();
 
             return relationshipId;
+        }
+
+        public async Task UpdateRelationship(
+            Guid memoryBookUniverseId,
+            Guid relationshipId,
+            DateTime? startDate,
+            DateTime? endDate)
+        {
+            RelationshipUpdateModel relationship = new RelationshipUpdateModel
+            {
+                StartDate = startDate,
+                EndDate = endDate,
+                Id = relationshipId
+            };
+
+            await this.relationshipCommandManager.UpdateRelationships(memoryBookUniverseId, relationship)
+                .ConfigureAwait(false);
+        }
+
+        public async Task DeleteRelationships(Guid memoryBookUniverseId, params Guid[] relationshipIds)
+        {
+            await this.relationshipCommandManager.DeleteRelationships(memoryBookUniverseId, relationshipIds)
+                .ConfigureAwait(false);
         }
     }
 }

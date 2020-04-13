@@ -7,7 +7,9 @@
 
     public interface IRelationshipCommandManager
     {
-        Task<IList<Guid>> CreateRelationship(Guid memoryBookUniverseId, params RelationshipCreateModel[] models);
+        Task<IList<Guid>> CreateRelationships(Guid memoryBookUniverseId, params RelationshipCreateModel[] models);
+
+        Task UpdateRelationships(Guid memoryBookUniverseId, params RelationshipUpdateModel[] models);
 
         Task DeleteRelationships(Guid memoryBookUniverseId, params Guid[] relationshipIds);
     }

@@ -8,10 +8,12 @@
     {
         Task<Guid> CreateUniverse(string universeName);
 
+        Task UpdateUniverses(params MemoryBookUniverseUpdateModel[] updateModels);
+
         Task<MemoryBookUniverseReadModel> GetUniverse(Guid universeId);
 
         Task<MemoryBookUniverseReadModel> GetUniverse(string universeName);
 
-        Task DeleteUniverse(Guid memoryBookUniverseId);
+        Task DeleteUniverse(params Guid[] memoryBookIds);
     }
 }

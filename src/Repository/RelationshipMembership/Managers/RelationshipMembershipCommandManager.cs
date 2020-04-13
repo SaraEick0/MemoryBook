@@ -36,6 +36,37 @@
             return entities.Select(x => x.Id).ToList();
         }
 
+        public async Task UpdateRelationshipMembership(Guid memoryBookUniverseId, params RelationshipMembershipUpdateModel[] models)
+        {
+            if (models == null || !models.Any())
+            {
+                return;
+            }
+
+            var relationshipMembershipIds = models.Select(x => x.Id).ToList();
+
+            var entities = await this.databaseContext.Set<RelationshipMembership>()
+                .Where(x => x.Relationship.MemoryBookUniverseId == memoryBookUniverseId)
+                .Where(x => relationshipMembershipIds.Contains(x.Id))
+                .ToListAsync();
+
+            foreach (var model in models)
+            {
+                var entity = entities.FirstOrDefault(x => x.Id == model.Id);
+
+                if (entity == null)
+                {
+                    continue;
+                }
+
+                UpdateEntity(entity, model);
+            }
+
+            this.databaseContext.UpdateRange(entities);
+
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
         public async Task DeleteRelationshipMembership(Guid memoryBookUniverseId, params Guid[] relationshipMembershipIds)
         {
             if (relationshipMembershipIds == null || !relationshipMembershipIds.Any())
@@ -65,6 +96,15 @@
                 StartTime = model.StartDate,
                 EndTime = model.EndDate
             };
+        }
+
+        private static void UpdateEntity(RelationshipMembership entity, RelationshipMembershipUpdateModel model)
+        {
+            entity.MemberId = model.MemberId;
+            entity.MemberRelationshipTypeId = model.MemberRelationshipTypeId;
+            entity.RelationshipId = model.RelationshipId;
+            entity.StartTime = model.StartDate;
+            entity.EndTime = model.EndDate;
         }
     }
 }

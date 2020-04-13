@@ -66,17 +66,15 @@
             return ids.First();
         }
 
-        public async Task DeleteUniverse(Guid memoryBookUniverseId)
+        public async Task UpdateUniverses(params MemoryBookUniverseUpdateModel[] updateModels)
         {
-            var universes = await this.memoryBookUniverseQueryManager.GetAllMemoryBookUniverses()
+            await this.memoryBookUniverseCommandManager.UpdateMemoryBookUniverse(updateModels)
                 .ConfigureAwait(false);
+        }
 
-            if (!universes.Any(x => x.Id == memoryBookUniverseId))
-            {
-                return;
-            }
-
-            await this.memoryBookUniverseCommandManager.DeleteMemoryBookUniverse(memoryBookUniverseId)
+        public async Task DeleteUniverse(params Guid[] memoryBookIds)
+        {
+            await this.memoryBookUniverseCommandManager.DeleteMemoryBookUniverse(memoryBookIds)
                 .ConfigureAwait(false);
         }
     }

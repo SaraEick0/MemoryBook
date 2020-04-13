@@ -2,11 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Text;
 
-    public class RelationshipMembershipByMemberModel
+    public class RelationshipMembershipByEntityModel
     {
-        public Guid MemberId { get; set; }
+        public Guid EntityId { get; set; }
 
         public IList<RelationshipMembershipReadModel> RelationshipMemberships { get; set; }
     }

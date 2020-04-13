@@ -36,16 +36,43 @@
             return entities.Select(x => x.Id).ToList();
         }
 
+        public async Task UpdateMemoryBookUniverse(params MemoryBookUniverseUpdateModel[] models)
+        {
+            if (models == null || !models.Any())
+            {
+                return;
+            }
+
+            IList<Guid> memoryBookIds = models.Select(x => x.Id).ToList();
+            
+            var memoryBooks = await this.databaseContext.Set<MemoryBookUniverse>()
+                .Where(x => memoryBookIds.Contains(x.Id))
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            IList<MemoryBookUniverse> memoryBookUniversesToUpdate = new List<MemoryBookUniverse>();
+            foreach (var model in models)
+            {
+                var entity = memoryBooks.FirstOrDefault(x => x.Id == model.Id);
+
+                if (entity == null)
+                {
+                    continue;
+                }
+
+                memoryBookUniversesToUpdate.Add(UpdateEntity(entity, model));
+            }
+
+            this.databaseContext.UpdateRange(memoryBookUniversesToUpdate);
+
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
         public async Task DeleteMemoryBookUniverse(params Guid[] memoryBookUniverseIds)
         {
             if (memoryBookUniverseIds == null || !memoryBookUniverseIds.Any())
             {
                 return;
-            }
-
-            foreach (var entry in this.databaseContext.ChangeTracker.Entries().ToList())
-            {
-                this.databaseContext.Entry(entry.Entity).State = EntityState.Detached;
             }
 
             Dictionary<Guid, MemoryBookUniverse> universeDictionary = databaseContext.Set<MemoryBookUniverse>()
@@ -60,19 +87,32 @@
                     continue;
                 }
 
-                this.databaseContext.Remove(entity);
+                entitiesToDelete.Add(entity);
             }
 
+            this.databaseContext.RemoveRange(entitiesToDelete);
             await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static MemoryBookUniverse CreateEntity(MemoryBookUniverseCreateModel model)
         {
+            Contract.RequiresNotNull(model, nameof(model));
+
             return new MemoryBookUniverse
             {
                 Name = model.Name,
                 CreatedDate = DateTime.UtcNow
             };
+        }
+
+        private static MemoryBookUniverse UpdateEntity(MemoryBookUniverse entity, MemoryBookUniverseUpdateModel model)
+        {
+            Contract.RequiresNotNull(entity, nameof(entity));
+            Contract.RequiresNotNull(model, nameof(model));
+
+            entity.Name = model.Name;
+
+            return entity;
         }
     }
 }

@@ -33,7 +33,7 @@
                 .ToListAsync();
         }
 
-        public async Task<IList<RelationshipMembershipByMemberModel>> GetRelationshipMembershipsForMembers(Guid memoryBookUniverseId, IList<Guid> memberIds)
+        public async Task<IList<RelationshipMembershipByEntityModel>> GetRelationshipMembershipsForMembers(Guid memoryBookUniverseId, IList<Guid> memberIds)
         {
             var relationshipMemberships =  await databaseContext.Set<RelationshipMembership>()
                 .Where(x => x.Relationship.MemoryBookUniverseId == memoryBookUniverseId)
@@ -45,9 +45,29 @@
                 .ToListAsync();
 
             return relationshipMemberships.GroupBy(x => x.MemberId)
-                .Select(x => new RelationshipMembershipByMemberModel
+                .Select(x => new RelationshipMembershipByEntityModel
                 {
-                    MemberId = x.Key,
+                    EntityId = x.Key,
+                    RelationshipMemberships = x.Select(m => m.ToReadModel()).ToList()
+                }).ToList();
+        }
+
+        public async Task<IList<RelationshipMembershipByEntityModel>> GetRelationshipMembershipsForRelationships(
+            Guid memoryBookUniverseId, IList<Guid> relationshipIds)
+        {
+            var relationshipMemberships = await databaseContext.Set<RelationshipMembership>()
+                .Where(x => x.Relationship.MemoryBookUniverseId == memoryBookUniverseId)
+                .Where(x => relationshipIds.Contains(x.RelationshipId))
+                .Include(x => x.Relationship)
+                .Include(x => x.Member)
+                .Include(x => x.MemberRelationshipType)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return relationshipMemberships.GroupBy(x => x.RelationshipId)
+                .Select(x => new RelationshipMembershipByEntityModel
+                {
+                    EntityId = x.Key,
                     RelationshipMemberships = x.Select(m => m.ToReadModel()).ToList()
                 }).ToList();
         }
