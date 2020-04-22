@@ -2,9 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using Detail.Models;
-    using Group.Models;
-    using Relationship.Models;
 
     public abstract class MemberModelBase
 	{

@@ -31,12 +31,12 @@
             services.AddTransient<IRelationshipDetailManager, RelationshipDetailManager>();
             services.AddTransient<IMemberDetailManager, MemberDetailManager>();
             services.AddTransient<IRelationshipManager, RelationshipManager>();
-            services.AddTransient<Business.Member.Managers.IMemberManager, MemberManager>();
+            services.AddTransient<IMemberManager, MemberManager>();
             services.AddTransient<IMemoryBookUniverseManager, MemoryBookUniverseManager>();
             
             services.AddTransient<IDetailAssociationProvider, DetailAssociationProvider>();
             services.AddTransient<IDetailProvider, DetailProvider>();
-            services.AddTransient<Business.Member.Providers.IMemberProvider, MemberProvider>();
+            services.AddTransient<IMemberProvider, MemberProvider>();
             services.AddTransient<IRelationshipTypeProvider, RelationshipTypeProvider>();
             services.AddTransient<IRelationshipProvider, RelationshipProvider>();
             services.AddTransient<IRelationshipMemberProvider, RelationshipMemberProvider>();

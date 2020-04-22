@@ -15,6 +15,6 @@
 
         public IList<DetailViewModel> Details { get; set; }
 
-        public IList<RelationshipViewModel> Relationships { get; set; }
+        public IList<CombinedRelationshipReadModel> Relationships { get; set; }
     }
 }

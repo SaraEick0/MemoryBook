@@ -20,7 +20,7 @@
             this.databaseContext = databaseContext;
         }
 
-        public async Task<IList<Guid>> CreateRelationship(Guid memoryBookUniverseId, params RelationshipCreateModel[] models)
+        public async Task<IList<Guid>> CreateRelationships(Guid memoryBookUniverseId, params RelationshipCreateModel[] models)
         {
             if (models == null || !models.Any())
             {
@@ -34,6 +34,36 @@
             await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
 
             return entities.Select(x => x.Id).ToList();
+        }
+
+        public async Task UpdateRelationships(Guid memoryBookUniverseId, params RelationshipUpdateModel[] models)
+        {
+            if (models == null || !models.Any())
+            {
+                return;
+            }
+
+            var relationshipIds = models.Select(x => x.Id).ToList();
+
+            var entities = await this.databaseContext.Set<Relationship>()
+                .Where(x => relationshipIds.Contains(x.Id))
+                .ToListAsync();
+
+            foreach (var model in models)
+            {
+                var entity = entities.FirstOrDefault(x => x.Id == model.Id);
+
+                if (entity == null)
+                {
+                    continue;
+                }
+
+                UpdateEntity(entity, model);
+            }
+
+            this.databaseContext.UpdateRange(entities);
+
+            await this.databaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteRelationships(Guid memoryBookUniverseId, params Guid[] relationshipIds)
@@ -63,6 +93,12 @@
                 EndTime = model.EndDate,
                 MemoryBookUniverseId = memoryBookUniverseId
             };
+        }
+
+        private static void UpdateEntity(Relationship relationship, RelationshipUpdateModel model)
+        {
+            relationship.StartTime = model.StartDate;
+            relationship.EndTime = model.EndDate;
         }
     }
 }

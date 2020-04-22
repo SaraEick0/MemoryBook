@@ -9,6 +9,8 @@
     {
         Task<IList<RelationshipMembershipReadModel>> GetAllRelationshipMemberships(Guid memoryBookUniverseId);
 
-        Task<IList<RelationshipMembershipByMemberModel>> GetRelationshipMembershipsForMembers(Guid memoryBookUniverseId, IList<Guid> memberIds);
+        Task<IList<RelationshipMembershipByEntityModel>> GetRelationshipMembershipsForMembers(Guid memoryBookUniverseId, IList<Guid> memberIds);
+
+        Task<IList<RelationshipMembershipByEntityModel>> GetRelationshipMembershipsForRelationships(Guid memoryBookUniverseId, IList<Guid> relationshipIds);
     }
 }

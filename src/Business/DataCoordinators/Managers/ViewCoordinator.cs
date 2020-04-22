@@ -17,11 +17,14 @@ namespace MemoryBook.Business.DataCoordinators.Managers
     using Member.Providers;
     using Microsoft.Extensions.Logging;
     using Relationship.Extensions;
+    using Relationship.Models;
     using Relationship.Providers;
     using Repository.DetailType.Managers;
     using Repository.DetailType.Models;
     using Repository.Group.Models;
     using Repository.Member.Models;
+    using Repository.Relationship.Models;
+    using Repository.RelationshipMembership.Models;
     using Repository.RelationshipType.Models;
 
     public class ViewCoordinator : IViewCoordinator
@@ -81,7 +84,7 @@ namespace MemoryBook.Business.DataCoordinators.Managers
             Dictionary<Guid, DetailTypeReadModel> detailTypesDictionary = detailTypes.ToDictionary(x => x.Id);
 
             Task<IList<DetailsByEntityModel>> groupDetails = this.detailProvider.GetDetailsForGroups(memoryBookUniverseId, groupId);
-            var memberViewModelsTask = this.GetMemberViewModels(memoryBookUniverseId, groupReadModel.MemberIds, detailTypesDictionary);
+            Task<IList<MemberViewModel>> memberViewModelsTask = this.GetMemberViewModels(memoryBookUniverseId, groupReadModel.MemberIds, detailTypesDictionary);
 
             await Task.WhenAll(groupDetails, memberViewModelsTask).ConfigureAwait(false);
 
@@ -97,35 +100,42 @@ namespace MemoryBook.Business.DataCoordinators.Managers
         {
             try
             {
-                var members = await this.memberProvider.GetMembers(memoryBookUniverseId, memberIds).ConfigureAwait(false);
-                var relationshipTypes = await relationshipTypeProvider.GetAllRelationshipTypes().ConfigureAwait(false);
+                IList<MemberReadModel> members = await this.memberProvider.GetMembers(memoryBookUniverseId, memberIds).ConfigureAwait(false);
 
-                Dictionary<Guid, MemberReadModel> memberDictionary = members.ToDictionary(x => x.Id);
-                Dictionary<Guid, RelationshipTypeReadModel> relationshipTypeDictionary =
-                    relationshipTypes.ToDictionary(x => x.Id);
+                if (!members.Any())
+                {
+                    return new List<MemberViewModel>();
+                }
 
+                List<CombinedRelationshipReadModel> relationshipReadModels = new List<CombinedRelationshipReadModel>();
                 List<Guid> distinctRelationshipIds = members.SelectMany(x => x.RelationshipIds).Distinct().ToList();
 
-                var relationships = await relationshipProvider.GetRelationships(memoryBookUniverseId, distinctRelationshipIds)
-                    .ConfigureAwait(false);
+                if (distinctRelationshipIds.Any())
+                {
+                    IList<RelationshipTypeReadModel> relationshipTypes = await relationshipTypeProvider.GetAllRelationshipTypes().ConfigureAwait(false);
+                    
+                    Dictionary<Guid, MemberReadModel> memberDictionary = members.ToDictionary(x => x.Id);
+                    Dictionary<Guid, RelationshipTypeReadModel> relationshipTypeDictionary = relationshipTypes.ToDictionary(x => x.Id);
 
-                var memberToRelationshipMembershipDictionary = await this.relationshipMemberProvider
-                    .GetRelationshipMembershipsForMembersAsync(memoryBookUniverseId, memberIds);
+                    IList<RelationshipReadModel> relationships = await relationshipProvider.GetRelationships(memoryBookUniverseId, distinctRelationshipIds)
+                        .ConfigureAwait(false);
 
-                var memberDetails = await this.detailProvider.GetDetailsForMembers(memoryBookUniverseId, memberIds.ToArray());
-                var relationshipDetails = await this.detailProvider.GetDetailsForRelationships(memoryBookUniverseId,
-                        distinctRelationshipIds.ToArray());
+                    IList<DetailsByEntityModel> relationshipDetails = await this.detailProvider.GetDetailsForRelationships(memoryBookUniverseId, distinctRelationshipIds.ToArray());
 
-                var relationshipDetailsDictionary = relationshipDetails.ToDictionary(x => x.EntityId,
-                    x => x.Details.Select(m => m.ToViewModel(detailTypesDictionary)).ToList());
+                    IDictionary<Guid, IList<RelationshipMembershipReadModel>> memberToRelationshipMembershipDictionary = await this.relationshipMemberProvider
+                        .GetRelationshipMembershipsForMembersAsync(memoryBookUniverseId, memberIds);
+                    Dictionary<Guid, List<DetailViewModel>> relationshipDetailsDictionary = relationshipDetails.ToDictionary(x => x.EntityId,
+                        x => x.Details.Select(m => m.ToViewModel(detailTypesDictionary)).ToList());
 
-                var relationshipDictionary = relationships.Select(x => x.ToViewModel(memberDictionary,
-                        memberToRelationshipMembershipDictionary, relationshipTypeDictionary, relationshipDetailsDictionary))
-                    .ToList();
+                    relationshipReadModels = relationships.Select(x => x.ToViewModel(memberDictionary, memberToRelationshipMembershipDictionary, relationshipTypeDictionary,
+                            relationshipDetailsDictionary))
+                        .ToList();
+                }
 
-                var memberDetailsDictionary = memberDetails.ToDictionary(x => x.EntityId,
-                    x => x.Details.Select(m => m.ToViewModel(detailTypesDictionary)).ToList());
-                return members.Select(x => x.ToViewModel(memberDetailsDictionary, relationshipDictionary)).ToList();
+                IList<DetailsByEntityModel> memberDetails = await this.detailProvider.GetDetailsForMembers(memoryBookUniverseId, memberIds.ToArray());
+                Dictionary<Guid, List<DetailViewModel>> memberDetailsDictionary = memberDetails?.ToDictionary(x => x.EntityId, x => x.Details.Select(m => m.ToViewModel(detailTypesDictionary)).ToList()) ?? new Dictionary<Guid, List<DetailViewModel>>();
+
+                return members.Select(x => x.ToViewModel(memberDetailsDictionary, relationshipReadModels)).ToList();
             }
             catch (Exception ex)
             {

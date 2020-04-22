@@ -12,7 +12,6 @@
     using MemoryBook.Repository.EntityType;
     using MemoryBook.Repository.Member.Models;
     using Microsoft.EntityFrameworkCore;
-    using Models;
 
     public class MemberQueryManager : IMemberQueryManager
     {

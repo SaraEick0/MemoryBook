@@ -12,10 +12,24 @@
             Guid memoryBookUniverseId,
             IList<Guid> memberIds);
 
+        Task<IList<RelationshipMembershipReadModel>> GetRelationshipMembershipsForRelationshipAsync(
+            Guid memoryBookUniverseId,
+            Guid relationshipId);
+
         Task<Guid> CreateRelationshipMembershipAsync(
             Guid relationshipId,
-            IList<RelationshipMemberModel> relationshipMembers,
-            DateTime? startDate,
-            DateTime? endDate);
+            IList<CombinedRelationshipMemberCreateModel> relationshipMembers,
+            DateTime? relationshipStartDate,
+            DateTime? relationshipEndDate);
+
+        Task UpdateRelationshipMembershipAsync(
+            Guid memoryBookUniverseId,
+            IList<RelationshipMembershipReadModel> relationshipMembers,
+            DateTime? relationshipStartDate,
+            DateTime? relationshipEndDate);
+
+        Task DeleteRelationshipMembershipAsync(
+            Guid memoryBookUniverseId,
+            IList<RelationshipMembershipReadModel> relationshipMembers);
     }
 }

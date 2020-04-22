@@ -13,7 +13,7 @@
 
     public static class MemberViewModelExtensions
     {
-        public static MemberViewModel ToViewModel(this MemberReadModel memberReadModel, IDictionary<Guid, List<DetailViewModel>> memberDetailsDictionary, IList<RelationshipViewModel> relationships)
+        public static MemberViewModel ToViewModel(this MemberReadModel memberReadModel, IDictionary<Guid, List<DetailViewModel>> memberDetailsDictionary, IList<CombinedRelationshipReadModel> relationships)
         {
             Contract.RequiresNotNull(memberReadModel, nameof(memberReadModel));
 
@@ -24,7 +24,7 @@
                 FullName = $"{memberReadModel.FirstName}{middleName} {memberReadModel.LastName}",
                 Id = memberReadModel.Id,
                 Details = memberDetailsDictionary.ContainsKey(memberReadModel.Id) ? memberDetailsDictionary[memberReadModel.Id] : new List<DetailViewModel>(),
-                Relationships = relationships?.Where(x => x.FirstMemberId == memberReadModel.Id || x.SecondMemberId == memberReadModel.Id).ToList()
+                Relationships = relationships?.Where(x => x.RelationshipMembers.Any(n => n.MemberId == memberReadModel.Id)).ToList()
             };
         }
 
@@ -43,11 +43,11 @@
             member.Details.Add(detail);
         }
 
-        public static void AddRelationship(this MemberViewModel member, RelationshipViewModel relationship)
+        public static void AddRelationship(this MemberViewModel member, CombinedRelationshipReadModel relationship)
         {
             if (member.Relationships == null)
             {
-                member.Relationships = new List<RelationshipViewModel>();
+                member.Relationships = new List<CombinedRelationshipReadModel>();
             }
 
             member.Relationships.Add(relationship);
@@ -58,10 +58,10 @@
             return member?.Details?.FirstOrDefault(x => x.DetailType == detailType);
         }
 
-        public static RelationshipViewModel GetRelationship(this MemberViewModel member, RelationshipTypeEnum otherMemberRelationshipType)
+        public static CombinedRelationshipReadModel GetRelationship(this MemberViewModel member, RelationshipTypeEnum otherMemberRelationshipType)
         {
             return member?.Relationships?.FirstOrDefault(x =>
-                (x.FirstMemberRelationshipType == otherMemberRelationshipType || x.SecondMemberRelationshipType == otherMemberRelationshipType));
+                (x.RelationshipMembers.Any(r => r.MemberRelationshipTypeCode == otherMemberRelationshipType.ToString())));
         }
     }
 }

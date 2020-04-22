@@ -9,6 +9,8 @@
     {
         Task<IList<Guid>> CreateRelationshipMembership(params RelationshipMembershipCreateModel[] models);
 
+        Task UpdateRelationshipMembership(Guid memoryBookUniverseId, params RelationshipMembershipUpdateModel[] models);
+
         Task DeleteRelationshipMembership(Guid memoryBookUniverseId, params Guid[] relationshipMembershipIds);
     }
 }

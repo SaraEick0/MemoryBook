@@ -9,6 +9,8 @@
     {
         Task<IList<Guid>> CreateMemoryBookUniverse(params MemoryBookUniverseCreateModel[] models);
 
+        Task UpdateMemoryBookUniverse(params MemoryBookUniverseUpdateModel[] models);
+
         Task DeleteMemoryBookUniverse(params Guid[] groupIds);
     }
 }
