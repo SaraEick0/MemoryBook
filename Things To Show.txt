@@ -1,0 +1,96 @@
+* Members
+
+Group Member: Mike
+  Details
+    LifeSpan
+      Born 12/1/1956 12:00:00 AM
+      Birthplace is Mt. Clemens, MI
+    Event
+       2/29/2020 12:00:00 AM
+      Went to Steven and Jonathan's Wedding Celebration
+
+  Relationships
+    Mike is Husband to Diane, who is 0 Years 1 Months 24 Days younger than Mike
+      Wedding
+        Mike & Diane Married : 6/14/1986 12:00:00 AM
+        St. Johns Lutheran Church
+        New Baltimore
+    Mike is Father to Lisa, who is 31 Years 2 Months 20 Days younger than Mike
+    Mike is Father to Sara, who is 36 Years 5 Months 10 Days younger than Mike
+
+Group Member: Diane
+  Details
+    LifeSpan
+      Born 1/25/1957 12:00:00 AM
+      Birthplace is Rochester, MI
+    Event
+       2/29/2020 12:00:00 AM
+      Went to Steven and Jonathan's Wedding Celebration
+
+  Relationships
+    Diane is Wife to Mike, who is 0 Years 1 Months 24 Days older than Diane
+      Wedding
+        Mike & Diane Married : 6/14/1986 12:00:00 AM
+        St. Johns Lutheran Church
+        New Baltimore
+    Diane is Mother to Lisa, who is 31 Years 0 Months 27 Days younger than Diane
+    Diane is Mother to Sara, who is 36 Years 3 Months 16 Days younger than Diane
+
+Group Member: Lisa
+  Details
+    LifeSpan
+      Born 2/21/1988 12:00:00 AM
+      Birthplace is Rochester, MI
+    Event
+       2/29/2020 12:00:00 AM
+      Went to Steven and Jonathan's Wedding Celebration
+
+  Relationships
+    Lisa is Daughter to Mike, who is 31 Years 2 Months 20 Days older than Lisa
+    Lisa is Daughter to Diane, who is 31 Years 0 Months 27 Days older than Lisa
+    Lisa is Seestra to Sara, who is 5 Years 2 Months 20 Days younger than Lisa
+    Lisa is Homie to Ian, who is 4 Years 10 Months 29 Days younger than Lisa
+
+Group Member: Sara
+  Details
+    LifeSpan
+      Born 5/11/1993 12:00:00 AM
+      Birthplace is Rochester, MI
+    Event
+       2/29/2020 12:00:00 AM
+      Went to Steven and Jonathan's Wedding Celebration
+
+  Relationships
+    Sara is Daughter to Mike, who is 36 Years 5 Months 10 Days older than Sara
+    Sara is Daughter to Diane, who is 36 Years 3 Months 16 Days older than Sara
+    Sara is Seestra to Lisa, who is 5 Years 2 Months 20 Days older than Sara
+    Sara is Homie to David, who is 2 Years 1 Months 10 Days older than Sara
+
+Group Member: Ian
+  Details
+    LifeSpan
+      Born 1/19/1993 12:00:00 AM
+      Birthplace is Reno, NV
+    Event
+       2/29/2020 12:00:00 AM
+      Went to Steven and Jonathan's Wedding Celebration
+
+  Relationships
+    Ian is Possee to Lisa, who is 4 Years 10 Months 29 Days older than Ian
+
+Group Member: David
+  Details
+    LifeSpan
+      Born 4/1/1991 12:00:00 AM
+      Birthplace is Grosse Pointe, MI
+    Event
+       2/29/2020 12:00:00 AM
+      Went to Steven and Jonathan's Wedding Celebration
+
+  Relationships
+    David is Possee to Sara, who is 2 Years 1 Months 10 Days younger than David
+
+Fun Facts!
+  Lisa was born 1 Years 8 Months 7 Days after her parents were married
+  Sara was born 6 Years 10 Months 27 Days after her parents were married
+  Sara was born 5 Years 2 Months 20 Days after Lisa was born

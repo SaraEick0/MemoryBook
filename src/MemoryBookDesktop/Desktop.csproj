@@ -10,12 +10,60 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NodaTime" Version="2.4.7" />
+    <Compile Remove="savex\**" />
+    <Compile Remove="save\**" />
+    <EmbeddedResource Remove="savex\**" />
+    <EmbeddedResource Remove="save\**" />
+    <None Remove="savex\**" />
+    <None Remove="save\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="SfMbDiagram.cs" />
+    <Compile Remove="SfMbDiagram.designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NodaTime" Version="3.0.0" />
+    <PackageReference Include="Syncfusion.Diagram.Windows" Version="18.1.0.45" />
+    <PackageReference Include="Syncfusion.Licensing" Version="18.1.0.45" />
+    <PackageReference Include="Syncfusion.Tools.Windows" Version="18.1.0.45" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Business\Business.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="AddMember.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AddMember.Designer.cs">
+      <DependentUpon>AddMember.cs</DependentUpon>
+    </Compile>
+    <Compile Update="AddRelationship.cs" />
+    <Compile Update="AddRelationship.Designer.cs">
+      <DependentUpon>AddRelationship.cs</DependentUpon>
+    </Compile>
+    <Compile Update="SfDiagram.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SfDiagram.Designer.cs">
+      <DependentUpon>SfDiagram.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="AddMember.resx">
+      <DependentUpon>AddMember.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="AddRelationship.resx">
+      <DependentUpon>AddRelationship.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="SfDiagram.resx">
+      <DependentUpon>SfDiagram.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

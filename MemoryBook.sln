@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop", "src\MemoryBookDe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "src\Service\Service.csproj", "{72919D83-E7C8-4904-ABEC-C8C095DA6AD0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SfDiagramPlay", "src\SfDiagramPlay\SfDiagramPlay.csproj", "{E6AD909A-83A5-49B2-A71B-7CAA41A9A18E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{72919D83-E7C8-4904-ABEC-C8C095DA6AD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72919D83-E7C8-4904-ABEC-C8C095DA6AD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72919D83-E7C8-4904-ABEC-C8C095DA6AD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6AD909A-83A5-49B2-A71B-7CAA41A9A18E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6AD909A-83A5-49B2-A71B-7CAA41A9A18E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6AD909A-83A5-49B2-A71B-7CAA41A9A18E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6AD909A-83A5-49B2-A71B-7CAA41A9A18E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

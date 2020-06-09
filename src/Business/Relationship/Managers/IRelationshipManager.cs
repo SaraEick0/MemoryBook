@@ -4,14 +4,14 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Models;
-    using Repository.Member.Models;
     using Repository.RelationshipType;
 
     public interface IRelationshipManager
     {
         Task<Guid> CreateTwoPersonRelationship(
-            MemberReadModel firstMember,
-            MemberReadModel secondMember,
+            Guid memoryBookUniverseId,
+            Guid firstMemberId,
+            Guid secondMemberId,
             RelationshipTypeEnum firstMemberRelationshipType,
             RelationshipTypeEnum secondMemberRelationshipType,
             DateTime? startDate,
