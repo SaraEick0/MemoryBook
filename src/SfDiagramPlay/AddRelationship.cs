@@ -59,12 +59,12 @@ namespace SfDiagramPlay
 
         private void AddRelationship_Load(object sender, EventArgs e)
         {
-            if (m_sfMainForm.NodeList.Count < 1)
+            if (m_sfMainForm.SfMemberNodeList.Count < 1)
                 return;
 
             int focusIdx1 = 0;
             int focusIdx2 = 0;
-            foreach (Node n in m_sfMainForm.NodeList)
+            foreach (Node n in m_sfMainForm.SfMemberNodeList)
             {
                 comboMember1.Items.Add(n.Name);
                 comboMember2.Items.Add(n.Name);
@@ -91,16 +91,16 @@ namespace SfDiagramPlay
         //***************************
         private void OnOk(object sender, EventArgs e)
         {
-            AddRelInfo ari = new AddRelInfo();
+            SfdAddRelInfo ari = new SfdAddRelInfo();
 #if false
-            IEnumerable<Node> v = m_sfMainForm.NodeList.Where(m => Name == (string)comboMember1.SelectedItem);
+            IEnumerable<Node> v = m_sfMainForm.SfMemberNodeList.Where(m => Name == (string)comboMember1.SelectedItem);
             string name = (string) comboMember1.SelectedItem;
-            var v2 = m_sfMainForm.NodeList.FirstOrDefault(a => Name == name);
+            var v2 = m_sfMainForm.SfMemberNodeList.FirstOrDefault(a => Name == name);
             ari.Member1 = v.FirstOrDefault();
-            ari.Member1 = m_sfMainForm.NodeList.Find(m => Name == (string)comboMember1.SelectedItem);
-            ari.Member2 = m_sfMainForm.NodeList.Find(m => Name == (string)comboMember2.SelectedItem);
+            ari.Member1 = m_sfMainForm.SfMemberNodeList.Find(m => Name == (string)comboMember1.SelectedItem);
+            ari.Member2 = m_sfMainForm.SfMemberNodeList.Find(m => Name == (string)comboMember2.SelectedItem);
 #endif
-            foreach (Node n in m_sfMainForm.NodeList)
+            foreach (Node n in m_sfMainForm.SfMemberNodeList)
             {
                 if (n.Name == (string)comboMember1.SelectedItem)
                     ari.Member1 = n;
@@ -120,7 +120,7 @@ namespace SfDiagramPlay
         }
     }
 
-    public class AddRelInfo
+    public class SfdAddRelInfo
     {
         public Guid MemoryBookUniverseId { get; set; }
         public Node Member1;

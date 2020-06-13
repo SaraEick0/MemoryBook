@@ -234,10 +234,10 @@
                 amd.MiddleName = mvm.FullName;
                 amd.LastName = mvm.FullName;
                 amd.CommonName = mvm.CommonName;
-                SfdMember sfdMember = m_sfDiagramForm.AddNode(amd);
+                SfdMember sfdMember = m_sfDiagramForm.AddMemberNode(amd);
 
                 // Now for convenience, add link between model and display elements
-                m_sfDiagramForm.AddNodeProperty(sfdMember, "MbNode", mvm);
+                m_sfDiagramForm.AddMemberNodeProperty(sfdMember, "MbNode", mvm);
 
                 // Other mechanisms used to associate model and display elements
                 memberToSfMemberList.Add(new MemberToSfdMember { member = mvm, diagramNode = sfdMember });
@@ -272,8 +272,8 @@
                         }
                         if (otherMton != null)
                         {
-                            ConnectorBase lc = m_sfDiagramForm.ConnectMembers(mtosfm.diagramNode, otherMton.diagramNode, selfRelationshipTypeCode, otherRelationshipTypeCode);
-                            //ME: Fix this m_sfd.AddConnectorProperty(lc, "MbRelationshup", 6);
+                            ConnectorBase lc = m_sfDiagramForm.AddRelationshop(mtosfm.diagramNode, otherMton.diagramNode, selfRelationshipTypeCode, otherRelationshipTypeCode);
+                            //ME: Fix this m_sfd.AddRelationshopProperty(lc, "MbRelationshup", 6);
 
                             relationshipList.Add(rel);
                         }
@@ -281,12 +281,12 @@
                     }
                 }
             }
-            m_sfDiagramForm.SetLayout();
+            m_sfDiagramForm.DrawDiagram();
         }
 
         //*******************************************************************
         //*******************************************************************
-        public bool SfGetMemberInfo(SfdMemberData amd)
+        public bool SfhGetMemberInfo(SfdMemberData amd)
         {
             return false;
         }
@@ -301,7 +301,7 @@
             if (nodeLabels.Count == 0)
                 return rels;
 
-            MemberViewModel member = (MemberViewModel)m_sfDiagramForm.GetNodeProperty(node, "MbNode");
+            MemberViewModel member = (MemberViewModel)m_sfDiagramForm.GetMemberNodeProperty(node, "MbNode");
             foreach (CombinedRelationshipReadModel rel in member.Relationships)
             {
                 CombinedRelationshipMemberReadModel selfRelationship = rel.RelationshipMembers.First(x => x.MemberId == member.Id);
@@ -326,10 +326,10 @@
             try
             {
                 MemberReadModel mvm = await this.memberManager.CreateMember(m_universeId, amd.FirstName, amd.MiddleName, amd.LastName, amd.CommonName);
-                m_sfDiagramForm.AddNodeProperty(amd.MemberNode, "MbNode", mvm);
+                m_sfDiagramForm.AddMemberNodeProperty(amd.MemberNode, "MbNode", mvm);
 
                 // Now for convenience, add link between model and display elements
-                m_sfDiagramForm.AddNodeProperty(amd.MemberNode, "MbNode", mvm);
+                m_sfDiagramForm.AddMemberNodeProperty(amd.MemberNode, "MbNode", mvm);
 
                 // Other mechanisms used to associate model and display elements
                 //ME: View cs Read ... Fix!  
@@ -345,10 +345,10 @@
         }
 
         //******************************************************************************************************
-        public int SfhAddRelationship(AddRelInfo ari)
+        public int SfhAddRelationship(SfdAddRelInfo ari)
         {
-            MemberViewModel member1 = (MemberViewModel)m_sfDiagramForm.GetNodeProperty(ari.Member1, "MbNode");
-            MemberViewModel member2 = (MemberViewModel)m_sfDiagramForm.GetNodeProperty(ari.Member2, "MbNode");
+            MemberViewModel member1 = (MemberViewModel)m_sfDiagramForm.GetMemberNodeProperty(ari.Member1, "MbNode");
+            MemberViewModel member2 = (MemberViewModel)m_sfDiagramForm.GetMemberNodeProperty(ari.Member2, "MbNode");
 
             this.relationshipManager.CreateTwoPersonRelationship(member1.MemoryBookUniverseId, member1.Id, member2.Id, ari.RelType1, ari.RelType2, DateTime.Now, null);
             return 0;

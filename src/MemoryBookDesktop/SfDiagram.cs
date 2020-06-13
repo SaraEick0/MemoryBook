@@ -46,25 +46,28 @@ namespace SfDiagramPlay
         void SfhLoadMbData();
 
         // These methods are to return information about Members and Relationships for display purposes
-        bool SfGetMemberInfo(SfdMemberData amd);
+        bool SfhGetMemberInfo(SfdMemberData amd);
         List<SfdRelationshipData> SfhGetRelationships(SfdMember node, Syncfusion.Windows.Forms.Diagram.LabelCollection nodeLabels);
 
         // These methods are to add add elements to the MemoryBook model
         Task<int> SfAddMemberToModel(SfdMemberData amd);
-        int SfhAddRelationship(AddRelInfo ari);
+        int SfhAddRelationship(SfdAddRelInfo ari);
     }
 
 
     public partial class SfDiagram : Form
     {
         public ISfHelper SfHelper;
+        public List<Node> SfMemberNodeList = new List<Node>();
+
+        // Mouse Click on Diagram
+        public Node m_lastClickedNode = null;
+        public Node m_prevClickedNode = null;
 
         Diagram m_diagram = null;
         LayoutEnum m_layoutSel = LayoutEnum.Table;
         ConnectorEnum m_connectorSel = ConnectorEnum.Line;
         bool m_UseGraphicNode = false;
-        public List<Node> NodeList = new List<Node>();
-
         SfdMemberData MemberData = null;
         List<SfdRelationshipData> Relationships;
 
@@ -135,12 +138,7 @@ namespace SfDiagramPlay
         }
 
         //*********************************************************************************************************
-        //*********************************************************************************************************
-        // Mouse Click on Diagram
-        public Node m_lastClickedNode = null;
-        public Node m_prevClickedNode = null;
-
-        //*********************************************************************************************************
+         //*********************************************************************************************************
         void OnDiagram_MouseClick(object sender, MouseEventArgs e)
         {
             INode clickedNode = m_diagram.Controller.GetNodeUnderMouse(e.Location);
@@ -182,14 +180,14 @@ namespace SfDiagramPlay
 
                 if (memberClicked)
                 {
-                    SfHelper.SfGetMemberInfo(MemberData);
+                    SfHelper.SfhGetMemberInfo(MemberData);
                     Relationships = SfHelper.SfhGetRelationships(MemberData.MemberNode, labs);
                     dgvRelationships.Rows.Clear();
                     foreach (SfdRelationshipData rel in Relationships)
                     {
                         PeerMemberData = new SfdMemberData();
                         PeerMemberData.MemberNode = rel.RelatedMemberNode;
-                        SfHelper.SfGetMemberInfo(PeerMemberData);
+                        SfHelper.SfhGetMemberInfo(PeerMemberData);
                         string ageDiff;
                         if (MemberData.Birthday < PeerMemberData.Birthday)
                         {
@@ -266,10 +264,10 @@ namespace SfDiagramPlay
 
 
 
-    //*********************************************************************************************************
-    //*********************************************************************************************************
-    //*********************************************************************************************************
-    void AddDiagram()
+        //*********************************************************************************************************
+        //*********************************************************************************************************
+        //*********************************************************************************************************
+        void AddDiagram()
         {
             if (m_diagram != null)
                 m_diagram.Dispose();
@@ -313,7 +311,7 @@ namespace SfDiagramPlay
 
 
         //*********************************************************************************************************
-        public SfdMember AddNode (SfdMemberData amd, string bitmapFile = "")
+        public SfdMember AddMemberNode (SfdMemberData amd, string bitmapFile = "")
         {
             try
             {
@@ -346,7 +344,7 @@ namespace SfDiagramPlay
                     el.Labels.Add(label);
 
                     m_diagram.Model.AppendChild(el);
-                    NodeList.Add(el);
+                    SfMemberNodeList.Add(el);
                     return el;
                 }
                 else
@@ -383,7 +381,7 @@ namespace SfDiagramPlay
                     el.Labels.Add(label);
 #endif
                     m_diagram.Model.AppendChild(el);
-                    NodeList.Add(el);
+                    SfMemberNodeList.Add(el);
                     return el;
                 }
             }
@@ -396,13 +394,13 @@ namespace SfDiagramPlay
 
         //*****************************************************************************************
         //******************************************************
-        public void AddNodeProperty(SfdMember node, string propertyName, object obj)
+        public void AddMemberNodeProperty(SfdMember node, string propertyName, object obj)
         {
             node.PropertyBag.Add(propertyName, obj);
         }
 
         //*****************************************************************************************
-        public object GetNodeProperty(SfdMember node, string propertyName)
+        public object GetMemberNodeProperty(SfdMember node, string propertyName)
         {
             object o = null;
             node.PropertyBag.TryGetValue(propertyName, out o);
@@ -412,7 +410,7 @@ namespace SfDiagramPlay
         //******************************************************
         //******************************************************
 
-        public ConnectorBase ConnectMembers(SfdMember m1, SfdMember m2, string m1RelText, string m2RelText)
+        public ConnectorBase AddRelationshop(SfdMember m1, SfdMember m2, string m1RelText, string m2RelText)
         {
             ConnectorBase c = null;
 
@@ -619,12 +617,12 @@ namespace SfDiagramPlay
 
 
         //*******************************************************************
-        public void AddConnectorProperty(ConnectorBase connector, string propertyName, object obj)
+        public void AddRelationshopProperty(ConnectorBase connector, string propertyName, object obj)
         {
             connector.PropertyBag.Add(propertyName, obj);
         }
 
-        public object GetConectorProperty(ConnectorBase connector, string propertyName)
+        public object GetRelationshopProperty(ConnectorBase connector, string propertyName)
         {
             object o = null;
             connector.PropertyBag.TryGetValue(propertyName, out o);
@@ -634,9 +632,9 @@ namespace SfDiagramPlay
         //*******************************************************************
         //*******************************************************************
         // Called from the AddRel form
-        public void AddRel(AddRelInfo ari)
+        public void AddRel(SfdAddRelInfo ari)
         {
-            ConnectorBase co = ConnectMembers(ari.Member1, 
+            ConnectorBase co = AddRelationshop(ari.Member1, 
                                               ari.Member2,
                                               ari.RelType1.ToString(),
                                               ari.RelType2.ToString());
@@ -646,7 +644,7 @@ namespace SfDiagramPlay
 
         //*******************************************************************
         //*******************************************************************
-        public void SetLayout ()
+        public void DrawDiagram ()
         {
             switch (m_layoutSel)
             {

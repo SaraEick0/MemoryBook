@@ -29,9 +29,9 @@ namespace SfDiagramPlay
             amd.MiddleName = tbMiddleName.Text;
             amd.LastName = tbLastName.Text;
             amd.CommonName = tbCommonName.Text;
-            Node newMember = m_sfMainForm.AddNode(amd, string.Empty);
+            Node newMember = m_sfMainForm.AddMemberNode(amd, string.Empty);
             amd.MemberNode = newMember;
-            m_sfMainForm.SetLayout();
+            m_sfMainForm.DrawDiagram();
             this.Close();
         }
 

@@ -48,34 +48,34 @@ namespace SfDiagramPlay
         {
             SfdMemberData amd = new SfdMemberData();
             amd.CommonName = "Mike";
-            Mike = m_sfDiagramForm.AddNode(amd, "../../Mike.bmp");
+            Mike = m_sfDiagramForm.AddMemberNode(amd, "../../Mike.bmp");
             amd.CommonName = "Diane";
-            Diane = m_sfDiagramForm.AddNode(amd, "../../Diane.bmp");
+            Diane = m_sfDiagramForm.AddMemberNode(amd, "../../Diane.bmp");
             amd.CommonName = "Lisa";
-            Lisa = m_sfDiagramForm.AddNode(amd, "../../Lisa.bmp");
+            Lisa = m_sfDiagramForm.AddMemberNode(amd, "../../Lisa.bmp");
             amd.CommonName = "Sara";
-            Sara = m_sfDiagramForm.AddNode(amd, "../../Sara.bmp");
+            Sara = m_sfDiagramForm.AddMemberNode(amd, "../../Sara.bmp");
             amd.CommonName = "Ian";
-            Ian = m_sfDiagramForm.AddNode(amd, "../../Ian.bmp");
+            Ian = m_sfDiagramForm.AddMemberNode(amd, "../../Ian.bmp");
             amd.CommonName = "David";
-            David = m_sfDiagramForm.AddNode(amd, "../../David.bmp");
+            David = m_sfDiagramForm.AddMemberNode(amd, "../../David.bmp");
 
-            m_sfDiagramForm.AddNodeProperty(David, "MbNode", 3);
+            m_sfDiagramForm.AddMemberNodeProperty(David, "MbNode", 3);
 
-            m_sfDiagramForm.SetLayout(); // Spread the nodes out :)
+            m_sfDiagramForm.DrawDiagram(); // Spread the nodes out :)
 
-            ConnectorBase connector = m_sfDiagramForm.ConnectMembers(Mike, Diane, "Husband", "Wife");
-            m_sfDiagramForm.AddConnectorProperty(connector, "MbRelationshup", 6);
+            ConnectorBase connector = m_sfDiagramForm.AddRelationshop(Mike, Diane, "Husband", "Wife");
+            m_sfDiagramForm.AddRelationshopProperty(connector, "MbRelationshup", 6);
 
-            m_sfDiagramForm.ConnectMembers(Mike, Lisa, "Father", "Daughter");
-            m_sfDiagramForm.ConnectMembers(Mike, Sara, "Father", "Daughter");
-            m_sfDiagramForm.ConnectMembers(Diane, Lisa, "Mother", "Daughter");
-            m_sfDiagramForm.ConnectMembers(Diane, Sara, "Mother", "Daughter");
-            m_sfDiagramForm.ConnectMembers(Lisa, Sara, "Sestra", "Sestra");
-            m_sfDiagramForm.ConnectMembers(Lisa, Ian, "Homie", "Homie");
-            m_sfDiagramForm.ConnectMembers(Sara, David, "Homie", "Homie");
+            m_sfDiagramForm.AddRelationshop(Mike, Lisa, "Father", "Daughter");
+            m_sfDiagramForm.AddRelationshop(Mike, Sara, "Father", "Daughter");
+            m_sfDiagramForm.AddRelationshop(Diane, Lisa, "Mother", "Daughter");
+            m_sfDiagramForm.AddRelationshop(Diane, Sara, "Mother", "Daughter");
+            m_sfDiagramForm.AddRelationshop(Lisa, Sara, "Sestra", "Sestra");
+            m_sfDiagramForm.AddRelationshop(Lisa, Ian, "Homie", "Homie");
+            m_sfDiagramForm.AddRelationshop(Sara, David, "Homie", "Homie");
 
-            m_sfDiagramForm.SetLayout();
+            m_sfDiagramForm.DrawDiagram();
             // UGH  m_diagram.Model.LineRouter.RoutingMode = RoutingMode.Automatic;
         }
 
@@ -142,13 +142,13 @@ namespace SfDiagramPlay
         }
 
         //*******************************************************************
-        public int SfhAddRelationship(AddRelInfo ari)
+        public int SfhAddRelationship(SfdAddRelInfo ari)
         {
             return 0;
         }
 
         //*******************************************************************
-        public bool SfGetMemberInfo(SfdMemberData amd)
+        public bool SfhGetMemberInfo(SfdMemberData amd)
         {
             switch (amd.MemberNode.Name)
             {
