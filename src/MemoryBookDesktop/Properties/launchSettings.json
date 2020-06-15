@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Desktop": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\github\\MemoryBook\\src\\SfDiagramPlay"
+    }
+  }
+}

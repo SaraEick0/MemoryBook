@@ -31,16 +31,14 @@
         }
 
         public async Task<Guid> CreateTwoPersonRelationship(
-            MemberReadModel firstMember,
-            MemberReadModel secondMember,
+            Guid memoryBookUniverseId,
+            Guid firstMemberId,
+            Guid secondMemberId,
             RelationshipTypeEnum firstMemberRelationshipType,
             RelationshipTypeEnum secondMemberRelationshipType,
             DateTime? startDate,
             DateTime? endDate)
         {
-            Contract.RequiresNotNull(firstMember, nameof(firstMember));
-            Contract.RequiresNotNull(secondMember, nameof(secondMember));
-
             RelationshipTypeReadModel firstMemberRelationshipTypeModel = await this.relationshipTypeProvider
                 .GetRelationshipType(firstMemberRelationshipType).ConfigureAwait(false);
 
@@ -53,12 +51,12 @@
                 {
                     new CombinedRelationshipMemberCreateModel
                     {
-                        MemberId = firstMember.Id,
+                        MemberId = firstMemberId,
                         MemberRelationshipTypeId = firstMemberRelationshipTypeModel.Id,
                     },
                     new CombinedRelationshipMemberCreateModel
                     {
-                        MemberId = secondMember.Id,
+                        MemberId = secondMemberId,
                         MemberRelationshipTypeId = secondMemberRelationshipTypeModel.Id
                     }
                 },
@@ -66,7 +64,7 @@
                 EndDate = endDate
             };
 
-            return (await this.CreateRelationships(firstMember.MemoryBookUniverseId, new List<CombinedRelationshipCreateModel> { createModel }).ConfigureAwait(false))?.FirstOrDefault() ?? Guid.Empty;
+            return (await this.CreateRelationships(memoryBookUniverseId, new List<CombinedRelationshipCreateModel> { createModel }).ConfigureAwait(false))?.FirstOrDefault() ?? Guid.Empty;
         }
 
         public async Task<IList<Guid>> CreateRelationships(Guid memoryBookUniverseId, IList<CombinedRelationshipCreateModel> createModels)

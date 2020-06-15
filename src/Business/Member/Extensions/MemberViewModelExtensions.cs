@@ -22,6 +22,7 @@
             {
                 CommonName = memberReadModel.CommonName,
                 FullName = $"{memberReadModel.FirstName}{middleName} {memberReadModel.LastName}",
+                MemoryBookUniverseId = memberReadModel.MemoryBookUniverseId,
                 Id = memberReadModel.Id,
                 Details = memberDetailsDictionary.ContainsKey(memberReadModel.Id) ? memberDetailsDictionary[memberReadModel.Id] : new List<DetailViewModel>(),
                 Relationships = relationships?.Where(x => x.RelationshipMembers.Any(n => n.MemberId == memberReadModel.Id)).ToList()

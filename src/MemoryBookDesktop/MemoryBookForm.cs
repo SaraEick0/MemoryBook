@@ -25,8 +25,12 @@
     using MemoryBook.Business.MemoryBookUniverse.Managers;
     using MemoryBook.Business.SeedData;
     using MemoryBook.Business.Detail.Managers;
+    using Syncfusion.Windows.Forms.Diagram;
+    using SfDiagramPlay;
 
-    public partial class MemoryBookForm : Form
+    using SfdMember = Syncfusion.Windows.Forms.Diagram.Node;
+
+    public partial class MemoryBookForm : Form, ISfHelper
     {
         private readonly IMemoryBookUniverseManager memoryBookUniverseManager;
         private readonly ISeedDataManager seedDataManager;
@@ -36,6 +40,10 @@
         private readonly IViewCoordinator groupViewCoordinator;
         private readonly IMemberDetailManager memberDetailManager;
         private readonly IRelationshipDetailManager relationshipDetailManager;
+
+        SfDiagram m_sfDiagramForm;
+        GroupViewModel m_group;
+        Guid m_universeId;
 
         public MemoryBookForm(
             IMemoryBookUniverseManager memoryBookUniverseManager,
@@ -68,11 +76,35 @@
             this.InitializeComponent();
         }
 
-        public delegate Task<string> InvokeDelegate(Label label);
+        public delegate Task<string> InvokeDelegate(System.Windows.Forms.Label label);
 
         //********************************************************************************
         private string DisplayMesh(GroupViewModel group)
         {
+            bool enableDiag = true;
+            bool enableString = false;
+            if (enableDiag == true)
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    // Running on the UI thread
+                    try
+                    {
+                        m_sfDiagramForm = new SfDiagram();
+                        m_sfDiagramForm.SfHelper = this;
+                        m_group = group;
+                        m_sfDiagramForm.Show();
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                });
+            }
+
+            if (enableString == false)
+                return "";
+
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(string.Format("\n******Group {0} ******", group.GroupName));
             sb.AppendLine(string.Format("\n* Members"));
@@ -179,6 +211,150 @@
             return sb.ToString();
         }
 
+
+        //********************************************
+        class MemberToSfdMember
+        {
+            public MemberViewModel member;
+            public SfdMember diagramNode;
+        };
+
+        //***************************************************************
+        public void SfhLoadMbData()
+        {
+            List<MemberToSfdMember> memberToSfMemberList = new List<MemberToSfdMember>();
+            List<CombinedRelationshipReadModel> rels = new List<CombinedRelationshipReadModel>();
+
+            // First add members to diagram
+            foreach (MemberViewModel mvm in m_group.Members)
+            {
+                // Add to SF Diagram
+                SfdMemberData amd = new SfdMemberData();
+                amd.FirstName = mvm.FullName;
+                amd.MiddleName = mvm.FullName;
+                amd.LastName = mvm.FullName;
+                amd.CommonName = mvm.CommonName;
+                SfdMember sfdMember = m_sfDiagramForm.AddMemberNode(amd);
+
+                // Now for convenience, add link between model and display elements
+                m_sfDiagramForm.AddMemberNodeProperty(sfdMember, "MbNode", mvm);
+
+                // Other mechanisms used to associate model and display elements
+                memberToSfMemberList.Add(new MemberToSfdMember { member = mvm, diagramNode = sfdMember });
+            }
+
+            // Got members on diagram, now add relationships
+            List<CombinedRelationshipReadModel> relationshipList = new List<CombinedRelationshipReadModel>();
+            foreach (MemberToSfdMember mtosfm in memberToSfMemberList)
+            {
+                MemberViewModel member = mtosfm.member;
+                if (member.Relationships != null)
+                {
+                    foreach (CombinedRelationshipReadModel rel in member.Relationships)
+                    {
+                        if (relationshipList.Contains(rel))
+                            continue;
+
+                        CombinedRelationshipMemberReadModel selfRelationship = rel.RelationshipMembers.First(x => x.MemberId == member.Id);
+                        string selfRelationshipTypeCode = selfRelationship.MemberRelationshipTypeCode;
+                        CombinedRelationshipMemberReadModel otherRelationship = rel.RelationshipMembers.First(x => x.MemberId != member.Id);
+                        string otherRelationshipTypeCode = otherRelationship.MemberRelationshipTypeCode;
+                        MemberViewModel otherMember = m_group.Members.First(x => x.Id == otherRelationship.MemberId);
+
+                        MemberToSfdMember otherMton = null;
+                        foreach (MemberToSfdMember mtosfm2 in memberToSfMemberList)
+                        {
+                            if (mtosfm2.member.Id == otherMember.Id)
+                            {
+                                otherMton = mtosfm2;
+                                break;
+                            }
+                        }
+                        if (otherMton != null)
+                        {
+                            ConnectorBase lc = m_sfDiagramForm.AddRelationshop(mtosfm.diagramNode, otherMton.diagramNode, selfRelationshipTypeCode, otherRelationshipTypeCode);
+                            //ME: Fix this m_sfd.AddRelationshopProperty(lc, "MbRelationshup", 6);
+
+                            relationshipList.Add(rel);
+                        }
+
+                    }
+                }
+            }
+            m_sfDiagramForm.DrawDiagram();
+        }
+
+        //*******************************************************************
+        //*******************************************************************
+        public bool SfhGetMemberInfo(SfdMemberData amd)
+        {
+            return false;
+        }
+
+
+        //*******************************************************************
+        public List<SfdRelationshipData> SfhGetRelationships(SfdMember node, Syncfusion.Windows.Forms.Diagram.LabelCollection nodeLabels)
+        {
+            List<SfdRelationshipData> rels = new List<SfdRelationshipData>();
+            SfdRelationshipData sfdRel;
+
+            if (nodeLabels.Count == 0)
+                return rels;
+
+            MemberViewModel member = (MemberViewModel)m_sfDiagramForm.GetMemberNodeProperty(node, "MbNode");
+            foreach (CombinedRelationshipReadModel rel in member.Relationships)
+            {
+                CombinedRelationshipMemberReadModel selfRelationship = rel.RelationshipMembers.First(x => x.MemberId == member.Id);
+                string selfRelationshipTypeCode = selfRelationship.MemberRelationshipTypeCode;
+                CombinedRelationshipMemberReadModel otherRelationship = rel.RelationshipMembers.First(x => x.MemberId != member.Id);
+                string otherRelationshipTypeCode = otherRelationship.MemberRelationshipTypeCode;
+                MemberViewModel otherMember = m_group.Members.First(x => x.Id == otherRelationship.MemberId);
+
+                sfdRel = new SfdRelationshipData();
+                sfdRel.RelatedTo = otherMember.CommonName;
+                sfdRel.RelationType = otherRelationshipTypeCode;
+                rels.Add(sfdRel);
+            }
+            return rels;
+        }
+
+
+        //*******************************************************************
+        //*******************************************************************
+        public async Task<int> SfAddMemberToModel(SfdMemberData amd)
+        {
+            try
+            {
+                MemberReadModel mvm = await this.memberManager.CreateMember(m_universeId, amd.FirstName, amd.MiddleName, amd.LastName, amd.CommonName);
+                m_sfDiagramForm.AddMemberNodeProperty(amd.MemberNode, "MbNode", mvm);
+
+                // Now for convenience, add link between model and display elements
+                m_sfDiagramForm.AddMemberNodeProperty(amd.MemberNode, "MbNode", mvm);
+
+                // Other mechanisms used to associate model and display elements
+                //ME: View cs Read ... Fix!  
+                //memberToSfMemberList.Add(new MemberToSfdMember { member = mvm, diagramNode = amd.MemberNode });
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return 1;
+        }
+
+        //******************************************************************************************************
+        public int SfhAddRelationship(SfdAddRelInfo ari)
+        {
+            MemberViewModel member1 = (MemberViewModel)m_sfDiagramForm.GetMemberNodeProperty(ari.Member1, "MbNode");
+            MemberViewModel member2 = (MemberViewModel)m_sfDiagramForm.GetMemberNodeProperty(ari.Member2, "MbNode");
+
+            this.relationshipManager.CreateTwoPersonRelationship(member1.MemoryBookUniverseId, member1.Id, member2.Id, ari.RelType1, ari.RelType2, DateTime.Now, null);
+            return 0;
+        }
+        //******************************************************************************************************
+        //******************************************************************************************************
         private void button1_Click(object sender, EventArgs e)
         {
             object[] myArray = new object[1];
@@ -188,13 +364,16 @@
             this.TestDataLabel.BeginInvoke(new InvokeDelegate(this.RunTestScenario), myArray);
         }
 
-        private async Task<string> RunTestScenario(Label label)
+        //******************************************************************************************************
+        private async Task<string> RunTestScenario(System.Windows.Forms.Label label)
         {
             const string UniverseName = "TestUniverse";
 
             await this.LoadSeedData().ConfigureAwait(false);
 
             Repository.MemoryBookUniverse.Models.MemoryBookUniverseReadModel universe = await this.memoryBookUniverseManager.GetUniverse(UniverseName).ConfigureAwait(false);
+
+            m_universeId = universe.Id;
 
             if (universe != null)
             {
@@ -217,6 +396,7 @@
             return meshRead;
         }
 
+        //******************************************************************************************************
         /// <summary>
         /// Need to update this, obviously this is dumb.
         /// </summary>
@@ -252,18 +432,18 @@
             await this.memberDetailManager.CreateBirthday(universeId, sara, ian.Id, new DateTime(1993, 1, 19), "Reno, NV");
             await this.memberDetailManager.CreateBirthday(universeId, sara, david.Id, new DateTime(1991, 5, 25), "Grosse Pointe, MI");
 
-            var mikeDianeRelationshipId = await this.relationshipManager.CreateTwoPersonRelationship(mike, diane, RelationshipTypeEnum.Husband, RelationshipTypeEnum.Wife, new DateTime(1986, 6, 14), null);
+            var mikeDianeRelationshipId = await this.relationshipManager.CreateTwoPersonRelationship(universeId, mike.Id, diane.Id, RelationshipTypeEnum.Husband, RelationshipTypeEnum.Wife, new DateTime(1986, 6, 14), null);
 
-            await this.relationshipManager.CreateTwoPersonRelationship( mike, lisa, RelationshipTypeEnum.Father, RelationshipTypeEnum.Daughter, new DateTime(1988, 2, 21), null);
-            await this.relationshipManager.CreateTwoPersonRelationship( diane, lisa, RelationshipTypeEnum.Mother, RelationshipTypeEnum.Daughter, new DateTime(1988, 2, 21), null);
-            await this.relationshipManager.CreateTwoPersonRelationship( mike, sara, RelationshipTypeEnum.Father, RelationshipTypeEnum.Daughter, new DateTime(1993, 05, 11), null);
-            await this.relationshipManager.CreateTwoPersonRelationship( diane, sara, RelationshipTypeEnum.Mother, RelationshipTypeEnum.Daughter, new DateTime(1993, 05, 11), null);
+            await this.relationshipManager.CreateTwoPersonRelationship(universeId, mike.Id, lisa.Id, RelationshipTypeEnum.Father, RelationshipTypeEnum.Daughter, new DateTime(1988, 2, 21), null);
+            await this.relationshipManager.CreateTwoPersonRelationship(universeId, diane.Id, lisa.Id, RelationshipTypeEnum.Mother, RelationshipTypeEnum.Daughter, new DateTime(1988, 2, 21), null);
+            await this.relationshipManager.CreateTwoPersonRelationship(universeId, mike.Id, sara.Id, RelationshipTypeEnum.Father, RelationshipTypeEnum.Daughter, new DateTime(1993, 05, 11), null);
+            await this.relationshipManager.CreateTwoPersonRelationship(universeId, diane.Id, sara.Id, RelationshipTypeEnum.Mother, RelationshipTypeEnum.Daughter, new DateTime(1993, 05, 11), null);
 
-            await this.relationshipManager.CreateTwoPersonRelationship( lisa, sara, RelationshipTypeEnum.Sister, RelationshipTypeEnum.Sister, new DateTime(1993, 05, 11), null);
-            await this.relationshipManager.CreateTwoPersonRelationship( lisa, sara, RelationshipTypeEnum.Sister, RelationshipTypeEnum.Friend, new DateTime(2011, 05, 11), null);
+            await this.relationshipManager.CreateTwoPersonRelationship(universeId, lisa.Id, sara.Id, RelationshipTypeEnum.Sister, RelationshipTypeEnum.Sister, new DateTime(1993, 05, 11), null);
+            await this.relationshipManager.CreateTwoPersonRelationship(universeId, lisa.Id, sara.Id, RelationshipTypeEnum.Friend, RelationshipTypeEnum.Friend, new DateTime(2011, 05, 11), null);
 
-            await this.relationshipManager.CreateTwoPersonRelationship( david, sara, RelationshipTypeEnum.Boyfriend, RelationshipTypeEnum.Girlfriend, new DateTime(2018, 10, 26), null);
-            await this.relationshipManager.CreateTwoPersonRelationship( ian, lisa, RelationshipTypeEnum.Boyfriend, RelationshipTypeEnum.Girlfriend, new DateTime(2018, 10, 11), null);
+            await this.relationshipManager.CreateTwoPersonRelationship(universeId, david.Id, sara.Id, RelationshipTypeEnum.Boyfriend, RelationshipTypeEnum.Girlfriend, new DateTime(2018, 10, 26), null);
+            await this.relationshipManager.CreateTwoPersonRelationship(universeId, ian.Id, lisa.Id, RelationshipTypeEnum.Boyfriend, RelationshipTypeEnum.Girlfriend, new DateTime(2018, 10, 11), null);
 
             await this.relationshipDetailManager.CreateWedding(mike, mikeDianeRelationshipId, new DateTime(1986, 6, 14), "St. Johns Lutheran Church in New Baltimore, MI")
                 .ConfigureAwait(false);
@@ -276,6 +456,7 @@
             return groupId;
         }
 
+        //******************************************************************************************************
         private async Task DeleteTestData(Guid memoryBookUniverseId)
         {
             await this.memoryBookUniverseManager.DeleteUniverse(memoryBookUniverseId);

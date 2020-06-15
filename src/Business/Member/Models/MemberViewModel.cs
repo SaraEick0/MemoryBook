@@ -9,6 +9,8 @@
     {
         public Guid Id { get; set; }
 
+        public Guid MemoryBookUniverseId { get; set; }
+
         public string FullName { get; set; }
 
         public string CommonName { get; set; }
